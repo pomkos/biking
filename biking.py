@@ -1,15 +1,10 @@
 import pandas as pd
 from pandas import ExcelWriter
 
-# name = 'Alaina' #Name of subject
-# AV = '11' #Acceleration/Velocity settings
-# csv_file = "Alaina11.xlsx" #name of csv file from the bike
-# output = "Alaina11_new.xlsx"#name for new, reorganized file
-
 #--- Manipulate an Excel File ---#
-def extract_df(name, AV, csv_file, output):
-    writer = ExcelWriter(output)
-    sheet = pd.read_excel(csv_file, sheet_name=0,) #sheetname refers to sheet in file
+def extract_df(csv_file):
+    csv_file2 = 'files\\' + csv_file + '.csv'
+    sheet = pd.read_csv(csv_file2, delimiter=',') #import excel page. Sheetname refers to sheet in file
     tag = sheet.set_index(['Tag']) #set Tag column as the default index
 
     # NOTE: use isin to iterate: tag.loc['item one','item two']
@@ -26,33 +21,38 @@ def extract_df(name, AV, csv_file, output):
     Cadence = tag.loc['{[CompactLogix]Rider_Cadence}'].set_index(';Date')
     Cadence.rename(columns={'Value':'Cadence'}, inplace=True)
 
-    merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, writer, output)
+    merge_df(Power, Torque, HR, Minute, Second, Cadence, csv_file)
 
-def merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, writer, output):
+def merge_df(Power, Torque, HR, Minute, Second, Cadence, csv_file):
     #--- Merge Dataframes ---#
     #dfs=[Power,Torque,HR,Minute,Second,Cadence]
-    name = pd.merge(Power,
+    subject_data = pd.merge(Power,
                     Torque[['Time','Torque']],
                     on='Time')
-    name = pd.merge(name, #left dataframe to merge to
+    subject_data = pd.merge(subject_data, #left dataframe to merge to
                     HR[['Time','Heart Rate']], #Right dataframe: select two columns 
                     on='Time') #merge based on matching "Time" column
-    name = pd.merge(name,
+    subject_data = pd.merge(subject_data,
                     Minute[['Time','Minute']],
                     on='Time')
-    name = pd.merge(name,
+    subject_data = pd.merge(subject_data,
                     Second[['Time','Second']],
                     on='Time')
-    name = pd.merge(name,
+    subject_data = pd.merge(subject_data,
                     Cadence[['Time','Cadence']],
                     on='Time')
 
-    name.insert(0,'Name',name)
-    name.insert(1,'AV',AV)
+    subject_data.insert(0,'Name',csv_file)
 
-    save_excel(name, writer, output)
 
-def save_excel(name, writer, output):
+    save_excel(subject_data, csv_file)
+
+def save_excel(subject_data, csv_file):
+    dataframes = []
+    dataframes.append(subject_data)
+    print(dataframes)
+    csv_file = 'new_files\\' + csv_file + '_new.xlsx'
     #--- Convert Dataframe to Excel ---#
-    name.to_excel(writer,sheet_name=name)
-    output.save()
+    writer = ExcelWriter(csv_file)
+    subject_data.to_excel(writer,sheet_name='Sheet1')
+    writer.save()

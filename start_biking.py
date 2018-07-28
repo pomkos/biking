@@ -1,12 +1,33 @@
 from biking import extract_df
+import pandas as pd
+import glob
+import os
 
 #--- Options ---#
 
-name = 'Alaina' #Name of subject
-AV = '11' #Acceleration/Velocity settings
-csv_file = "Alaina11.xlsx" #name of csv file from the bike
-output = "Alaina11_new.xlsx"#name for new, reorganized file
+#csv_file = "Bryan44" #name of csv file from the bike
 
 #---------------#
 
-extract_df(name, AV, csv_file, output)
+def reorg_excels():
+    path = 'C:\\Users\\albei\\Nextcloud\\Programming\\biking\\files' #where the csv files are located
+    all_files = glob.glob(os.path.join(path, "*.csv")) #make a list of paths
+
+    for files in all_files:
+        csv_file = os.path.splitext(os.path.basename(files))[0] #get file name without extension
+        extract_df(csv_file)
+
+def combine_excels():
+    dataframes = []
+    path2 = 'C:\\Users\\albei\\Nextcloud\\Programming\\biking\\new_files'
+    new_files = glob.glob(os.path.join(path2, "*.csv"))
+    dataframes.append(new_files)
+    for f in [new_files]:
+        data = pd.read_excel(f, 'Sheet1').iloc[:-2]
+        data.index = [os.path.basename(f)] * len(data)
+        dataframes.append(data)
+
+    df = pd.concat(dataframes)
+    print(df)
+
+combine_excels()

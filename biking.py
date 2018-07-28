@@ -2,9 +2,9 @@ import pandas as pd
 from pandas import ExcelWriter
 
 #--- Manipulate an Excel File ---#
-def extract_df(name, AV, excel_file, output):
+def extract_df(name, AV, csv_file, output):
     writer = ExcelWriter(output)
-    sheet = pd.read_excel(excel_file, sheet_name=0,) #sheetname refers to sheet in file
+    sheet = pd.read_excel(csv_file, sheet_name=0,) #sheetname refers to sheet in file
     tag = sheet.set_index(['Tag']) #set Tag column as the default index
 
     # NOTE: use isin to iterate: tag.loc['item one','item two']
@@ -21,9 +21,9 @@ def extract_df(name, AV, excel_file, output):
     Cadence = tag.loc['{[CompactLogix]Rider_Cadence}'].set_index(';Date')
     Cadence.rename(columns={'Value':'Cadence'}, inplace=True)
 
-    merge_df(Power, Torque, HR, Minute, Second, Cadence, writer)
+    merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, writer)
 
-def merge_df(*args):
+def merge_df(name, AV, *args):
     #--- Merge Dataframes ---#
     #dfs=[Power,Torque,HR,Minute,Second,Cadence]
     bigdata = pd.merge(args[1],
@@ -45,9 +45,9 @@ def merge_df(*args):
     bigdata.insert(0,'Name',name)
     bigdata.insert(1,'AV',AV)
 
-    save_excel(bigdata, args[7])
+    save_excel(name, bigdata, args[7])
 
-def save_excel(*args):
+def save_excel(name, *args):
     #--- Convert Dataframe to Excel ---#
     args[1].to_excel(args[2],sheet_name=name)
     args[2].save()

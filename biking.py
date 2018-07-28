@@ -44,9 +44,13 @@ def merge_df(Power, Torque, HR, Minute, Second, Cadence, csv_file):
 
     subject_data.insert(0,'Name',csv_file)
 
+
     save_excel(subject_data, csv_file)
 
 def save_excel(subject_data, csv_file):
+    dataframes = []
+    dataframes.append(subject_data)
+    print(dataframes)
     csv_file = 'new_files\\' + csv_file + '_new.xlsx'
     #--- Convert Dataframe to Excel ---#
     writer = ExcelWriter(csv_file)

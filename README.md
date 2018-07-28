@@ -11,10 +11,14 @@ start_biking.py has options you may change:
 ```
 #--- Options ---#
 
-name = 'Alaina' #Name of subject
-AV = '11' #Acceleration/Velocity settings
-csv_file = "Alaina11.xlsx" #name of csv file from the bike
-output = "bike_data.xlsx"#name for new, reorganized file
+name = 'Alaina'
+AV = '11'
+csv_file = "Alaina11.csv"
 
 #---------------#
 ```
+* name: name of subject
+* AV: acceleration and velocity settings
+* csv_file = name of csv file
+
+Output will be as an excel file in the form of name_new.xlsx

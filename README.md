@@ -13,7 +13,7 @@ start_biking.py has options you may change:
 
 name = 'Alaina'
 AV = '11'
-csv_file = "Alaina11.csv"
+csv_file = "Bob11.csv"
 
 #---------------#
 ```
@@ -21,4 +21,4 @@ csv_file = "Alaina11.csv"
 * AV: acceleration and velocity settings
 * csv_file = name of csv file
 
-Output will be as an excel file in the form of "csv_file_new.xlsx"
+Output will be as an excel file in the form of "csv_file_new.xlsx", so "Bob11_new.xlsx"

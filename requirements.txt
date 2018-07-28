@@ -1,0 +1,7 @@
+matplotlib
+NumPy
+OpenPyXL
+pandas
+xlrd
+xlwt
+XlsxWriter

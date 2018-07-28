@@ -21,4 +21,4 @@ csv_file = "Alaina11.csv"
 * AV: acceleration and velocity settings
 * csv_file = name of csv file
 
-Output will be as an excel file in the form of name_new.xlsx
+Output will be as an excel file in the form of "csv_file_new.xlsx"

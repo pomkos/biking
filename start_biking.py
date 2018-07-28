@@ -1,10 +1,10 @@
 from biking import extract_df
 
 #--- Options ---#
-name = 'Alaina'
-AV = '11'
-excel_file = "Alaina11.xlsx"
-output = "bike_data.xlsx"
+name = 'Alaina' #Name of subject
+AV = '11' #Acceleration/Velocity settings
+csv_file = "Alaina11.xlsx" #name of csv file from the bike
+output = "bike_data.xlsx"#name for new, reorganized file
 #---------------#
 
-extract_df(name, AV, excel_file, output)
+extract_df(name, AV, csv_file, output)

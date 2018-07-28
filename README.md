@@ -11,7 +11,7 @@ start_biking.py has options you may change:
 ```
 #--- Options ---#
 
-name = 'Alaina'
+name = 'Bob'
 AV = '11'
 csv_file = "Bob11.csv"
 

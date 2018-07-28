@@ -2,9 +2,9 @@ import pandas as pd
 from pandas import ExcelWriter
 
 #--- Manipulate an Excel File ---#
-def extract_df(name, AV, csv_file):
-    csv_file2 = csv_file + '.csv'
-    sheet = pd.read_csv(csv_file2, delimiter=',') #sheetname refers to sheet in file
+def extract_df(csv_file):
+    csv_file2 = 'files\\' + csv_file + '.csv'
+    sheet = pd.read_csv(csv_file2, delimiter=',') #import excel page. Sheetname refers to sheet in file
     tag = sheet.set_index(['Tag']) #set Tag column as the default index
 
     # NOTE: use isin to iterate: tag.loc['item one','item two']
@@ -21,9 +21,9 @@ def extract_df(name, AV, csv_file):
     Cadence = tag.loc['{[CompactLogix]Rider_Cadence}'].set_index(';Date')
     Cadence.rename(columns={'Value':'Cadence'}, inplace=True)
 
-    merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, csv_file)
+    merge_df(Power, Torque, HR, Minute, Second, Cadence, csv_file)
 
-def merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, csv_file):
+def merge_df(Power, Torque, HR, Minute, Second, Cadence, csv_file):
     #--- Merge Dataframes ---#
     #dfs=[Power,Torque,HR,Minute,Second,Cadence]
     subject_data = pd.merge(Power,
@@ -42,14 +42,13 @@ def merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, csv_file):
                     Cadence[['Time','Cadence']],
                     on='Time')
 
-    subject_data.insert(0,'Name',name)
-    subject_data.insert(1,'AV',AV)
+    subject_data.insert(0,'Name',csv_file)
 
-    save_excel(subject_data, name, csv_file)
+    save_excel(subject_data, csv_file)
 
-def save_excel(subject_data, name, csv_file):
-    csv_file = csv_file + '_new.xlsx'
+def save_excel(subject_data, csv_file):
+    csv_file = 'new_files\\' + csv_file + '_new.xlsx'
     #--- Convert Dataframe to Excel ---#
     writer = ExcelWriter(csv_file)
-    subject_data.to_excel(writer,sheet_name=name)
+    subject_data.to_excel(writer,sheet_name='Sheet1')
     writer.save()

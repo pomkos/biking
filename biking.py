@@ -1,13 +1,6 @@
 import pandas as pd
 from pandas import ExcelWriter
 
-#--- Options ---#
-name = 'Alaina'
-AV = '11'
-excel_file = "Alaina11.xlsx"
-output = "bike_data.xlsx"
-
-
 #--- Manipulate an Excel File ---#
 def extract_df(name, AV, excel_file, output):
     writer = ExcelWriter(output)

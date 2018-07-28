@@ -1,6 +1,11 @@
 import pandas as pd
 from pandas import ExcelWriter
 
+# name = 'Alaina' #Name of subject
+# AV = '11' #Acceleration/Velocity settings
+# csv_file = "Alaina11.xlsx" #name of csv file from the bike
+# output = "Alaina11_new.xlsx"#name for new, reorganized file
+
 #--- Manipulate an Excel File ---#
 def extract_df(name, AV, csv_file, output):
     writer = ExcelWriter(output)
@@ -21,33 +26,33 @@ def extract_df(name, AV, csv_file, output):
     Cadence = tag.loc['{[CompactLogix]Rider_Cadence}'].set_index(';Date')
     Cadence.rename(columns={'Value':'Cadence'}, inplace=True)
 
-    merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, writer)
+    merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, writer, output)
 
-def merge_df(name, AV, *args):
+def merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, writer, output):
     #--- Merge Dataframes ---#
     #dfs=[Power,Torque,HR,Minute,Second,Cadence]
-    bigdata = pd.merge(args[1],
-                    args[2][['Time','Torque']],
+    name = pd.merge(Power,
+                    Torque[['Time','Torque']],
                     on='Time')
-    bigdata = pd.merge(bigdata, #left dataframe to merge to
-                    args[3][['Time','Heart Rate']], #Right dataframe: select two columns 
+    name = pd.merge(name, #left dataframe to merge to
+                    HR[['Time','Heart Rate']], #Right dataframe: select two columns 
                     on='Time') #merge based on matching "Time" column
-    bigdata = pd.merge(bigdata,
-                    args[4][['Time','Minute']],
+    name = pd.merge(name,
+                    Minute[['Time','Minute']],
                     on='Time')
-    bigdata = pd.merge(bigdata,
-                    args[5][['Time','Second']],
+    name = pd.merge(name,
+                    Second[['Time','Second']],
                     on='Time')
-    bigdata = pd.merge(bigdata,
-                    args[6][['Time','Cadence']],
+    name = pd.merge(name,
+                    Cadence[['Time','Cadence']],
                     on='Time')
 
-    bigdata.insert(0,'Name',name)
-    bigdata.insert(1,'AV',AV)
+    name.insert(0,'Name',name)
+    name.insert(1,'AV',AV)
 
-    save_excel(name, bigdata, args[7])
+    save_excel(name, writer, output)
 
-def save_excel(name, *args):
+def save_excel(name, writer, output):
     #--- Convert Dataframe to Excel ---#
-    args[1].to_excel(args[2],sheet_name=name)
-    args[2].save()
+    name.to_excel(writer,sheet_name=name)
+    output.save()

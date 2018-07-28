@@ -5,7 +5,7 @@ from biking import extract_df
 name = 'Alaina' #Name of subject
 AV = '11' #Acceleration/Velocity settings
 csv_file = "Alaina11.xlsx" #name of csv file from the bike
-output = "bike_data.xlsx"#name for new, reorganized file
+output = "Alaina11_new.xlsx"#name for new, reorganized file
 
 #---------------#
 

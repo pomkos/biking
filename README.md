@@ -2,23 +2,15 @@ Combine different excel files and reformat them appropriately, for eventual usag
 
 # How to
 
+Prereqs:
 ```
-pip install -r requirements.txt #install requirements
-pip start_biking.py #start script
+pip install -r requirements.txt
 ```
-## Options
-start_biking.py has options you may change:
+To start the script:
 ```
-#--- Options ---#
-
-name = 'Bob'
-AV = '11'
-csv_file = "Bob11.csv"
-
-#---------------#
+pip start_biking.py
 ```
-* name: name of subject
-* AV: acceleration and velocity settings
-* csv_file = name of csv file
-
-Output will be as an excel file in the form of "csv_file_new.xlsx", so "Bob11_new.xlsx"
+# Notes
+* CSV files must be placed in a "files" folder, under the same directory that the python scripts are
+* Reformatted CSV files will be saved as XLSX files in the new_files folder
+* The newly created "combined_sheets.xlsx" contains the merged XLSX files, this can be imported into SPSS/R for data analysis

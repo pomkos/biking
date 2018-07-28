@@ -1,12 +1,12 @@
 Combine different excel files and reformat them appropriately, for eventual usage in SPSS/R.
 
-#How to
+# How to
 
 ```
 pip install -r requirements.txt #install requirements
 pip start_biking.py #start script
 ```
-##Options
+## Options
 start_biking.py has options you may change:
 ```
 #--- Options ---#

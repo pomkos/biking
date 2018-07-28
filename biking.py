@@ -8,7 +8,6 @@ from pandas import ExcelWriter
 
 #--- Manipulate an Excel File ---#
 def extract_df(name, AV, csv_file, output):
-    writer = ExcelWriter(output)
     sheet = pd.read_excel(csv_file, sheet_name=0,) #sheetname refers to sheet in file
     tag = sheet.set_index(['Tag']) #set Tag column as the default index
 
@@ -26,33 +25,34 @@ def extract_df(name, AV, csv_file, output):
     Cadence = tag.loc['{[CompactLogix]Rider_Cadence}'].set_index(';Date')
     Cadence.rename(columns={'Value':'Cadence'}, inplace=True)
 
-    merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, writer, output)
+    merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, output)
 
-def merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, writer, output):
+def merge_df(name, AV, Power, Torque, HR, Minute, Second, Cadence, output):
     #--- Merge Dataframes ---#
     #dfs=[Power,Torque,HR,Minute,Second,Cadence]
-    name = pd.merge(Power,
+    name_data = pd.merge(Power,
                     Torque[['Time','Torque']],
                     on='Time')
-    name = pd.merge(name, #left dataframe to merge to
+    name_data = pd.merge(name_data, #left dataframe to merge to
                     HR[['Time','Heart Rate']], #Right dataframe: select two columns 
                     on='Time') #merge based on matching "Time" column
-    name = pd.merge(name,
+    name_data = pd.merge(name_data,
                     Minute[['Time','Minute']],
                     on='Time')
-    name = pd.merge(name,
+    name_data = pd.merge(name_data,
                     Second[['Time','Second']],
                     on='Time')
-    name = pd.merge(name,
+    name_data = pd.merge(name_data,
                     Cadence[['Time','Cadence']],
                     on='Time')
 
-    name.insert(0,'Name',name)
-    name.insert(1,'AV',AV)
+    name_data.insert(0,'Name',name)
+    name_data.insert(1,'AV',AV)
 
-    save_excel(name, writer, output)
+    save_excel(name_data, output, name)
 
-def save_excel(name, writer, output):
+def save_excel(name_data, output, name):
     #--- Convert Dataframe to Excel ---#
-    name.to_excel(writer,sheet_name=name)
-    output.save()
+    writer = ExcelWriter(output)
+    name_data.to_excel(writer,sheet_name=name)
+    writer.save()

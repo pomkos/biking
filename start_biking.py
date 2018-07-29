@@ -18,7 +18,7 @@ def combine_excels():
     path2 = 'new_files'
     new_files = glob.glob(os.path.join(path2, "*.xlsx"))
     for f in new_files:
-        data = pd.read_excel(f, 'Sheet1')
+        data = pd.read_excel(f, 'Sheet1').iloc[:-2]
         data.index = [os.path.basename(f)] * len(data)
         dataframes.append(data)
 

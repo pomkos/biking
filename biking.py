@@ -44,13 +44,18 @@ def merge_df(Power, Torque, HR, Minute, Second, Cadence, csv_file):
 
     subject_data.insert(0,'Name',csv_file)
 
+    data_manip(subject_data, csv_file)
 
+def data_manip(subject_data, csv_file):
+    df = subject_data
+    df = df.drop(df[(df.Power <= 0) & (df.Cadence < 75)].index)
+    df = df.drop(df[(df.Marker == 'E') | (df.Marker == 'B')].index)
+    df = df.drop(df[(df.Minute == 0) & (df.Cadence <= 75)].index)
+    df = df.drop(df[(df.Minute == 5) & (df.Cadence <= 75)].index)
+    subject_data = df
     save_excel(subject_data, csv_file)
 
 def save_excel(subject_data, csv_file):
-    dataframes = []
-    dataframes.append(subject_data)
-    print(dataframes)
     csv_file = 'new_files\\' + csv_file + '_new.xlsx'
     #--- Convert Dataframe to Excel ---#
     writer = ExcelWriter(csv_file)

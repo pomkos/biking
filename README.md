@@ -23,4 +23,4 @@ By default this script will remove all rows where:
 * Minute is 5 AND cadence is less than 75
 * Marker is E OR Marker is B
 
-These criteria indicate that the bike is just powering up/down. By default the script will also remove heart rate values that are less than 50 or greater than 200, indicating a malfunction of the heart rate monitor.
+These criteria indicate that the bike is just powering up/down. By default the script will also remove heart rate values that are less than 50 or greater than 200 (but leaves the row intact), indicating a malfunction of the heart rate monitor.

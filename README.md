@@ -24,3 +24,14 @@ By default this script will remove all rows where:
 * Marker is E OR Marker is B
 
 These criteria indicate that the bike is just powering up/down. By default the script will also remove heart rate values that are less than 50 or greater than 200 (but leaves the row intact), indicating a malfunction of the heart rate monitor.
+
+# Output
+
+Before:
+![alt text](https://github.com/pomkos/biking/blob/master/before.png)
+
+After:
+![alt text](https://github.com/pomkos/biking/blob/master/after.png)
+
+Combined files:
+![alt text](https://github.com/pomkos/biking/blob/master/combined.png)

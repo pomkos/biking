@@ -13,7 +13,7 @@ def extract_df(csv_file):
     Torque = tag.loc['{[CompactLogix]Actual_Torque}'].set_index(';Date')
     Torque.rename(columns={'Value':'Torque'}, inplace=True)
     HR = tag.loc['{[CompactLogix]Heart_Rate}'].set_index(';Date')
-    HR.rename(columns={'Value':'Heart Rate'}, inplace=True)
+    HR.rename(columns={'Value':'HR'}, inplace=True)
     Minute = tag.loc['{[CompactLogix]Minute_Counter}'].set_index(';Date')
     Minute.rename(columns={'Value':'Minute'}, inplace=True)
     Second = tag.loc['{[CompactLogix]Second_Counter}'].set_index(';Date')
@@ -30,7 +30,7 @@ def merge_df(Power, Torque, HR, Minute, Second, Cadence, csv_file):
                     Torque[['Time','Torque']],
                     on='Time')
     subject_data = pd.merge(subject_data, #left dataframe to merge to
-                    HR[['Time','Heart Rate']], #Right dataframe: select two columns 
+                    HR[['Time','HR']], #Right dataframe: select two columns 
                     on='Time') #merge based on matching "Time" column
     subject_data = pd.merge(subject_data,
                     Minute[['Time','Minute']],

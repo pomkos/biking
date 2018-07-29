@@ -27,11 +27,11 @@ These criteria indicate that the bike is just powering up/down. By default the s
 
 # Output
 
-Before:
+##Before (raw):
 ![alt text](https://github.com/pomkos/biking/blob/master/before.png)
 
-After:
+##After:
 ![alt text](https://github.com/pomkos/biking/blob/master/after.png)
 
-Combined files:
+##Combined files:
 ![alt text](https://github.com/pomkos/biking/blob/master/combined.png)

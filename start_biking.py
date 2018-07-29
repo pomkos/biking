@@ -12,6 +12,7 @@ def reorg_excels():
     for files in all_files:
         csv_file = os.path.splitext(os.path.basename(files))[0] #get file name without extension
         extract_df(csv_file)
+        print(csv_file + ".csv reorganized!")
 
 def combine_excels():
     dataframes = []
@@ -29,6 +30,7 @@ def combine_excels():
     writer = ExcelWriter(csv_file)
     df.to_excel(writer,sheet_name='Sheet1')
     writer.save()
+    print(csv_file + " saved!")
 
 reorg_excels()
 combine_excels()

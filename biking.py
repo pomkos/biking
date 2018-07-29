@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from pandas import ExcelWriter
 
 #--- Manipulate an Excel File ---#
@@ -52,6 +53,7 @@ def data_manip(subject_data, csv_file):
     df = df.drop(df[(df.Marker == 'E') | (df.Marker == 'B')].index)
     df = df.drop(df[(df.Minute == 0) & (df.Cadence <= 75)].index)
     df = df.drop(df[(df.Minute == 5) & (df.Cadence <= 75)].index)
+    df['HR'] = np.where(df.HR > 150, '', df.HR) | np.where(df.HR < 50, '', df.HR)
     subject_data = df
     save_excel(subject_data, csv_file)
 

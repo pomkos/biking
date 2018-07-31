@@ -7,7 +7,7 @@ def get_pandas_path():
     pandas_path = pandas.__path__[0]
     return pandas_path
 
-a = Analysis(['dynamic_bike.py'],
+a = Analysis(['start_dbiking.py'],
              pathex=['C:\\Users\\albei\\Documents\\Programming\\biking\\dynamic_biking'],
              binaries=[],
              datas=[],
@@ -30,7 +30,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='dynamic_bike',
+          name='start_dbiking',
           debug=False,
           strip=False,
           upx=True,

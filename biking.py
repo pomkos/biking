@@ -53,7 +53,12 @@ def data_manip(subject_data, csv_file):
     df = df.drop(df[(df.Marker == 'E') | (df.Marker == 'B')].index)
     df = df.drop(df[(df.Minute == 0) & (df.Cadence <= 75)].index)
     df = df.drop(df[(df.Minute == 5) & (df.Cadence <= 75)].index)
-    df['HR'] = np.where(df.HR > 150, '', df.HR) | np.where(df.HR < 50, '', df.HR)
+    mask = df.HR > 180
+    column_name = 'HR'
+    df.loc[mask, column_name] = 0
+    mask = df.HR < 40
+    column_name = 'HR'
+    df.loc[mask, column_name] = 0
     subject_data = df
     save_excel(subject_data, csv_file)
 

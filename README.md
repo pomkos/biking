@@ -6,10 +6,38 @@ Prereqs:
 ```
 pip install -r requirements.txt
 ```
-To start the script:
+## To start the script:
 ```
 pip start_biking.py
 ```
+## To compile using pyinstaller:
+```
+pyinstaller start_sbiking.py -F
+```
+Pyinstaller does not compile pandas in full, the .exe will not work. Edit the start_sbiking.spec to:
+```
+block_cipher = None
+
+def get_pandas_path():
+    import pandas
+    pandas_path = pandas.__path__[0]
+    return pandas_path
+    
+a = Analysis(['start_sbiking.py'],
+........................
+             cipher=block_cipher)
+
+dict_tree = Tree(get_pandas_path(), prefix='pandas', excludes=["*.pyc"])
+a.datas += dict_tree
+a.binaries = filter(lambda x: 'pandas' not in x[0], a.binaries)
+
+pyz = PYZ(a.pure, a.zipped_data,
+```
+And then recompile:
+```
+pyinstaller start_sbiking.spec -F
+```
+
 # Notes
 * CSV files must be placed in either "dynamic_files" or "static_files" folder, under the same directory that the python scripts are
 * Recommended that CSV files be saved in the form of "subject_id.csv"

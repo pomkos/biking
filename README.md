@@ -2,7 +2,7 @@ Combine different excel files, reformat it, and clean data appropriately for eve
 
 # How to
 
-Prereqs:
+## Prereqs:
 ```
 pip install -r requirements.txt
 ```

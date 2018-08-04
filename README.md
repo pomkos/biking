@@ -33,9 +33,9 @@ pyinstaller start_sbiking.spec -F
 ```
 
 # Notes
-* CSV files must be placed in either "dynamic_files" or "static_files" folder, under the same directory that the python scripts are
-* Recommended that CSV files be saved in the form of "subject_id.csv"
-* Reformatted CSV files will be saved as XLSX files in the "dynamic_new_files" or "static_new_files" folder as appropriate
+* CSV files must be placed in the "input" folder, under the same directory that the appropriate python script is
+* Recommended that CSV files be saved in the form of "TMS_PC04_27.csv", this naming format is used in MatLab
+* Reformatted CSV files will be saved as XLSX files in the "output" folder as appropriate
 * The newly created "combined_sheets.xlsx" contains the merged XLSX files, this can be imported into SPSS/R for data analysis
 
 # Default data manipulation: dynamic settings

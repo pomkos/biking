@@ -6,7 +6,7 @@ def get_pandas_path():
     import pandas
     pandas_path = pandas.__path__[0]
     return pandas_path
-
+    
 a = Analysis(['start_sbiking.py'],
              pathex=['C:\\Users\\albei\\Documents\\Programming\\biking\\static_biking'],
              binaries=[],

@@ -4,7 +4,7 @@ from pandas import ExcelWriter
 
 #--- Manipulate an Excel File ---#
 def extract_df(csv_file):
-    csv_file2 = 'static_files\\' + csv_file + '.csv'
+    csv_file2 = 'input\\' + csv_file + '.csv'
     sheet = pd.read_csv(csv_file2, delimiter=',') #import excel page. Sheetname refers to sheet in file
     tag = sheet.set_index(['Tag']) #set Tag column as the default index
 
@@ -52,7 +52,7 @@ def data_manip(subject_data, csv_file):
     df = df.drop(df[(df.Marker == 'E') | (df.Marker == 'B')].index)
     df = df.drop(df[(df.Minute == 0) & (df.Cadence <= 50)].index)
     df = df.drop(df[(df.Minute == 5) & (df.Cadence <= 50)].index)
-    mask = df.HR > 180
+    mask = df.HR > 200
     column_name = 'HR'
     df.loc[mask, column_name] = 0
     mask = df.HR < 40
@@ -62,7 +62,7 @@ def data_manip(subject_data, csv_file):
     save_excel(subject_data, csv_file)
 
 def save_excel(subject_data, csv_file):
-    csv_file = 'static_new_files\\' + csv_file + '_new.xlsx'
+    csv_file = 'output\\' + csv_file + '_new.xlsx'
     #--- Convert Dataframe to Excel ---#
     writer = ExcelWriter(csv_file)
     subject_data.to_excel(writer,sheet_name='Sheet1')

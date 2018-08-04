@@ -6,7 +6,7 @@ import glob
 import os
 
 def reorg_excels():
-    path = 'dynamic_files' #where the csv files are located
+    path = 'input' #where the csv files are located
     all_files = glob.glob(os.path.join(path, "*.csv")) #make a list of paths
 
     for files in all_files:
@@ -16,7 +16,7 @@ def reorg_excels():
 
 def combine_excels():
     dataframes = []
-    path2 = 'dynamic_new_files'
+    path2 = 'output'
     new_files = glob.glob(os.path.join(path2, "*.xlsx"))
     for f in new_files:
         data = pd.read_excel(f, 'Sheet1').iloc[:-2]

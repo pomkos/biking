@@ -21,7 +21,7 @@ def get_pandas_path():
     pandas_path = pandas.__path__[0]
     return pandas_path
 ```
-Then add the following "cipher=block_cipher)":
+Then add the following BEFORE "pyz = PYZ(a.pure, a.zipped_data,":
 ```
 dict_tree = Tree(get_pandas_path(), prefix='pandas', excludes=["*.pyc"])
 a.datas += dict_tree

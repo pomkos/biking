@@ -28,7 +28,7 @@ def combine_excels():
     csv_file = 'dynamic_sheets.xlsx'
     #--- Convert Dataframe to Excel ---#
     writer = ExcelWriter(csv_file)
-    df.to_excel(writer,sheet_name='Sheet1')
+    df.to_excel(writer,sheet_name='Sheet1') #save without name of columns and the row-numbers
     writer.save()
     print(csv_file + " saved!")
 

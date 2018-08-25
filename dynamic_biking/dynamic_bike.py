@@ -65,9 +65,12 @@ def data_manip(subject_data, csv_file):
 
 def save_excel(subject_data, csv_file):
     del subject_data['Minute']
-    
+    del subject_data['Time']
+    del subject_data['Millitm']
+    del subject_data['Status']
+    del subject_data['Marker']
     csv_file = 'output\\' + csv_file + '_new.xlsx'
     #--- Convert Dataframe to Excel ---#
     writer = ExcelWriter(csv_file)
-    subject_data.to_excel(writer,sheet_name='Sheet1')
+    subject_data.to_excel(writer,sheet_name='Sheet1', index=False, header=False) #save without name of columns and the row-numbers
     writer.save()

@@ -64,5 +64,5 @@ These criteria indicate that the bike is just powering up/down. By default the s
 ## After:
 ![alt text](https://github.com/pomkos/biking/blob/master/after.png)
 
-## Combined files:
-![alt text](https://github.com/pomkos/biking/blob/master/combined.png)
+## Matlab Analysis:
+![alt text](https://github.com/pomkos/biking/blob/master/matlab.png)

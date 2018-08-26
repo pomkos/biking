@@ -8,7 +8,7 @@ pip install -r requirements.txt
 ```
 ## To start the script:
 ```
-pip start_biking.py
+python start_biking.py
 ```
 ## To compile using pyinstaller:
 ```

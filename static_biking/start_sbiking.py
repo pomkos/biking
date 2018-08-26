@@ -16,7 +16,7 @@ def reorg_excels():
 
 def combine_excels():
     dataframes = []
-    path2 = 'output'
+    path2 = 'output' #where the new xlsx files are saved
     new_files = glob.glob(os.path.join(path2, "*.xlsx"))
     for f in new_files:
         data = pd.read_excel(f, 'Sheet1').iloc[:-2]

@@ -68,6 +68,7 @@ def save_excel(subject_data, csv_file):
     del subject_data['Millitm']
     del subject_data['Status']
     del subject_data['Marker']
+    subject_data['ID'] = csv_file
     csv_file = 'output\\' + csv_file + '_new.xlsx'
     #--- Convert Dataframe to Excel ---#
     writer = ExcelWriter(csv_file)

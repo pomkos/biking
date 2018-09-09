@@ -22,7 +22,6 @@ def extract_df(csv_file):
     Second = tag.loc['{[CompactLogix]Second_Counter}'].set_index(';Date')
     Second.rename(columns={'Value':'Second'}, inplace=True)
 
-
     merge_df(HR, Cadence, Power, Minute, Torque, Second, csv_file)
 
 def merge_df(HR, Cadence, Power, Minute, Torque, Second, csv_file):
@@ -69,6 +68,7 @@ def save_excel(subject_data, csv_file):
     del subject_data['Millitm']
     del subject_data['Status']
     del subject_data['Marker']
+    subject_data['ID'] = csv_file
     csv_file = 'output\\' + csv_file + '_new.xlsx'
     #--- Convert Dataframe to Excel ---#
     writer = ExcelWriter(csv_file)

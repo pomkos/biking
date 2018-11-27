@@ -4,9 +4,9 @@ from pandas import ExcelWriter
 
 #--- Manipulate an Excel File ---#
 
-def extract_df(csv_file, low_HR, high_HR, low_Cadence):
+def extract_df(csv_file):
     csv_file2 = 'input\\' + csv_file + '.csv'
-    sheet = pd.read_csv(csv_file2, delimiter=',') #import excel page. Sheetname refers to sheet in file
+    sheet = pd.read_csv(csv_file2, delimiter=',') #import csv page. Sheetname refers to sheet in file
     tag = sheet.set_index(['Tag']) #set Tag column as the default index
 
     # NOTE: use isin to iterate: tag.loc['item one','item two']
@@ -18,10 +18,15 @@ def extract_df(csv_file, low_HR, high_HR, low_Cadence):
     Power.rename(columns={'Value':'Power'}, inplace=True) #rename Value column to Power
     Torque = tag.loc['{[CompactLogix]Actual_Torque}'].set_index(';Date')
     Torque.rename(columns={'Value':'Torque'}, inplace=True)
+    ext_dic = {
+        'HR': HR,
+        'Cadence': Cadence,
+        'Power': Power,
+        'Torque': Torque
+    }
+    return ext_dic
 
-    merge_df(HR, Cadence, Power, Torque, csv_file, low_HR, high_HR, low_Cadence)
-
-def merge_df(HR, Cadence, Power, Torque, csv_file, low_HR, high_HR, low_Cadence):
+def merge_df(HR, Cadence, Power, Torque, csv_file):
     #--- Merge Dataframes ---#
     subject_data = pd.merge(HR,
                     Cadence[['Time','Cadence']],
@@ -35,7 +40,7 @@ def merge_df(HR, Cadence, Power, Torque, csv_file, low_HR, high_HR, low_Cadence)
 
     #subject_data.insert(0,'Name',csv_file)
     del subject_data['Torque']
-    data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence)
+    return subject_data
 
 def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence):
     df = subject_data
@@ -50,7 +55,6 @@ def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence):
     df.loc[mask, column_name] = 0
     subject_data = df
     save_excel(subject_data, csv_file)
-    
 
 def save_excel(subject_data, csv_file):
     del subject_data['Time']
@@ -61,5 +65,5 @@ def save_excel(subject_data, csv_file):
     csv_file = 'output\\' + csv_file + '_new.xlsx'
     #--- Convert Dataframe to Excel ---#
     writer = ExcelWriter(csv_file)
-    subject_data.to_excel(writer,sheet_name='Sheet1', index=False, header=False) #save without name of columns and the row-numbers
+    subject_data.to_excel(writer,sheet_name='Sheet1', index=False) #, header=False) #save without name of columns and the row-numbers
     writer.save()

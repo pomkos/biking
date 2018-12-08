@@ -12,7 +12,7 @@ python start_biking.py
 ```
 ## To compile using pyinstaller:
 ```
-pyinstaller start_sbiking.py -F
+pyinstaller start_biking.py -F
 ```
 Pyinstaller does not compile pandas in full, the .exe will not work. Edit the start_sbiking.spec and add the following AFTER "block_cipher = None":
 ```
@@ -29,32 +29,13 @@ a.binaries = filter(lambda x: 'pandas' not in x[0], a.binaries)
 ```
 And then recompile:
 ```
-pyinstaller start_sbiking.spec -F
+pyinstaller start_biking.spec -F
 ```
 
 # Notes
 * CSV files must be placed in the "input" folder, under the same directory that the appropriate python script is
-* Recommended that CSV files be saved in the form of "TMS_PC04_27.csv", this naming format is used in MatLab
 * Reformatted CSV files will be saved as XLSX files in the "output" folder as appropriate
 * The newly created "combined_sheets.xlsx" contains the merged XLSX files, this can be imported into SPSS/R for data analysis
-
-# Default data manipulation: dynamic settings
-By default this script will remove all rows where:
-* Power is negative or 0 AND cadence is less than 75
-* Minute is 0 AND cadence is less than 75
-* Minute is 5 AND cadence is less than 75
-* Marker is E OR Marker is B
-* Heart Rate is < 40 OR > 150
-
-# Default data manipulation: static settings
-By default this script will remove all rows where:
-* Power is negative or 0 AND cadence is less than 75
-* Minute is 0 AND cadence is less than 40
-* Minute is 5 AND cadence is less than 40
-* Marker is E OR Marker is B
-* Heart Rate is < 40 OR > 200
-
-These criteria indicate that the bike is just powering up/down. By default the script will also remove heart rate values that are less than or greater than certain values (but leaves the row intact), indicating a malfunction of the heart rate monitor.
 
 # Output
 

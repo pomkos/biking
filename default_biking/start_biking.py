@@ -44,7 +44,7 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip):
         Torque = ext_dic['Torque']
         #--   --#
         subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
-        data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence)
+        data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip)
         print(csv_file + ".csv reorganized!")
     combine_excels(manip)
 
@@ -61,7 +61,7 @@ def reorg_excels_no_manip(manip):
         Torque = ext_dic['Torque']
         #--   --#
         subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
-        save_excel(subject_data, csv_file)
+        save_excel(subject_data, csv_file, manip)
         print(csv_file + ".csv reorganized!")
     combine_excels(manip)
 
@@ -75,7 +75,7 @@ def combine_excels(manip):
         writer = pd.ExcelWriter('combined_data_manip.xlsx')
         all_data.to_excel(writer,sheet_name='Sheet1', index=False) #save without name of columns and the row-numbers
         writer.save()
-        again = input("Finished! Press 1 to quit or 2 to start again: ") #only quit when prompted
+        again = input("Finished! Press 1 to quit or 2 to start again.") #only quit when prompted
         again = int(again)
         if again == 2:
             user_input()
@@ -86,7 +86,7 @@ def combine_excels(manip):
         all_data.to_excel(writer,sheet_name='Sheet1', index=False) #save without name of columns and the row-numbers
         writer.save()
         print("combined_data_raw.xlsx saved!")
-        again = input("Finished! Press 1 to quit or 2 to start again: ") #only quit when prompted
+        again = input("Finished! Press 1 to quit or 2 to start again.") #only quit when prompted
         again = int(again)
         if again == 2:
             user_input()

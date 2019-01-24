@@ -42,7 +42,7 @@ def merge_df(HR, Cadence, Power, Torque, csv_file):
     del subject_data['Torque']
     return subject_data
 
-def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence):
+def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip):
     df = subject_data
     #df = df.drop(df[(df.Power <= 0) & (df.Cadence < 15)].index) # saved for posterity
     df = df.drop(df[(df.Cadence <= low_Cadence)].index)
@@ -54,16 +54,23 @@ def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence):
     column_name = 'HR'
     df.loc[mask, column_name] = 0
     subject_data = df
-    save_excel(subject_data, csv_file)
+    save_excel(subject_data, csv_file, manip)
 
-def save_excel(subject_data, csv_file):
+def save_excel(subject_data, csv_file, manip):
     del subject_data['Time']
     del subject_data['Millitm']
     del subject_data['Status']
     del subject_data['Marker']
     subject_data['ID'] = csv_file
-    csv_file = 'output\\' + csv_file + '_new.xlsx'
-    #--- Convert Dataframe to Excel ---#
-    writer = ExcelWriter(csv_file)
-    subject_data.to_excel(writer,sheet_name='Sheet1', index=False) #, header=False) #save without name of columns and the row-numbers
-    writer.save()
+    if manip == 1:
+        csv_file = 'output\\' + csv_file + '_new.xlsx'
+        #--- Convert Dataframe to Excel ---#
+        writer = ExcelWriter(csv_file)
+        subject_data.to_excel(writer,sheet_name='Sheet1', index=False) #, header=False) #save without name of columns and the row-numbers
+        writer.save()
+    if manip == 2:
+        csv_file = 'output\\raw_reorg' + csv_file + '_new.xlsx'
+        #--- Convert Dataframe to Excel ---#
+        writer = ExcelWriter(csv_file)
+        subject_data.to_excel(writer,sheet_name='Sheet1', index=False) #, header=False) #save without name of columns and the row-numbers
+        writer.save()

@@ -6,7 +6,7 @@ import glob
 import os
 
 def user_input(): #prompt data_manip() integers
-    manip = input("Would you like to remove appropriate HR/cadence? (Press 1 for yes, 2 for no): ")
+    manip = input("Would you like to set limits on HR/cadence analysis? (Press 1 for yes, 2 for no): ")
     manip = int(manip)
     if manip == 1:
         print('-------------------------------------------------------------')
@@ -75,12 +75,21 @@ def combine_excels(manip):
         writer = pd.ExcelWriter('combined_data_manip.xlsx')
         all_data.to_excel(writer,sheet_name='Sheet1', index=False) #save without name of columns and the row-numbers
         writer.save()
-        print("combined_data_manip.xlsx saved!")
-        input("Finished! Press enter to quit.") #only quit when prompted
+        again = input("Finished! Press 1 to quit or 2 to start again.") #only quit when prompted
+        again = int(again)
+        if again == 2:
+            user_input()
+        else:
+            quit
     if manip == 2:
         writer = pd.ExcelWriter('combined_data_raw.xlsx')
         all_data.to_excel(writer,sheet_name='Sheet1', index=False) #save without name of columns and the row-numbers
         writer.save()
         print("combined_data_raw.xlsx saved!")
-        input("Finished! Press enter to quit.") #only quit when prompted
+        again = input("Finished! Press 1 to quit or 2 to start again.") #only quit when prompted
+        again = int(again)
+        if again == 2:
+            user_input()
+        else:
+            quit
 user_input()

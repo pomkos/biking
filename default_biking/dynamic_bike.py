@@ -69,7 +69,7 @@ def save_excel(subject_data, csv_file, manip):
         subject_data.to_excel(writer,sheet_name='Sheet1', index=False) #, header=False) #save without name of columns and the row-numbers
         writer.save()
     if manip == 2:
-        csv_file = 'output\\raw_reorg' + csv_file + '_new.xlsx'
+        csv_file = 'output\\raw_reorg\\' + csv_file + '_new_raw.xlsx'
         #--- Convert Dataframe to Excel ---#
         writer = ExcelWriter(csv_file)
         subject_data.to_excel(writer,sheet_name='Sheet1', index=False) #, header=False) #save without name of columns and the row-numbers

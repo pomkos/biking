@@ -6,7 +6,7 @@ import glob
 import os
 
 def user_input(): #prompt data_manip() integers
-    manip = input("Would you like to set limits on HR/cadence analysis? (Press 1 for yes, 2 for no): ")
+    manip = input("Would you like to clean the HR/cadence data? (Press 1 for yes, 2 for no): ")
     manip = int(manip)
     if manip == 1:
         print('-------------------------------------------------------------')
@@ -20,16 +20,20 @@ def user_input(): #prompt data_manip() integers
         print("I will replace HR <", low_HR,"bpm or >", high_HR, "bpm with a '0'")
         print("I will delete rows who's cadence is <", low_Cadence)
         print('-------------------------------------------------------------')      
-        confirm = input("Press 1 to confirm or 2 to quit: ")
+        confirm = input("Press 1 to confirm or 2 to start over: ")
         confirm = int(confirm)
         if confirm == 1:
             reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip)
+        if confirm == 2:
+            user_input()
      
     if manip == 2:
-        confirm = input("Press 1 to confirm or 2 to quit: ")
+        confirm = input("Press 1 to confirm or 2 to start over: ")
         confirm = int(confirm)
         if confirm == 1:
             reorg_excels_no_manip(manip)
+        if confirm == 2:
+            user_input()
         
 def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip):
     path = 'input' #where the raw csv files are located
@@ -75,7 +79,7 @@ def combine_excels(manip):
         writer = pd.ExcelWriter('combined_data_manip.xlsx')
         all_data.to_excel(writer,sheet_name='Sheet1', index=False) #save without name of columns and the row-numbers
         writer.save()
-        again = input("Finished! Press 1 to quit or 2 to start again.") #only quit when prompted
+        again = input("Finished! Press 1 to quit or 2 to start again: ") #only quit when prompted
         again = int(again)
         if again == 2:
             user_input()
@@ -86,7 +90,7 @@ def combine_excels(manip):
         all_data.to_excel(writer,sheet_name='Sheet1', index=False) #save without name of columns and the row-numbers
         writer.save()
         print("combined_data_raw.xlsx saved!")
-        again = input("Finished! Press 1 to quit or 2 to start again.") #only quit when prompted
+        again = input("Finished! Press 1 to quit or 2 to start again: ") #only quit when prompted
         again = int(again)
         if again == 2:
             user_input()

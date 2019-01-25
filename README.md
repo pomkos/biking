@@ -27,6 +27,11 @@ dict_tree = Tree(get_pandas_path(), prefix='pandas', excludes=["*.pyc"])
 a.datas += dict_tree
 a.binaries = filter(lambda x: 'pandas' not in x[0], a.binaries)
 ```
+As of Numpy 1.16.0 you also need to modify:
+```
+hiddenimports=['numpy.core._dtype_ctypes']
+```
+
 And then recompile:
 ```
 pyinstaller start_biking.spec -F

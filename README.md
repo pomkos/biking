@@ -2,11 +2,13 @@ Combine different excel files, reformat it, and clean data appropriately for eve
 
 # How to
 
-## Prereqs:
+## Start the script:
+
+Install all requirements
 ```
 pip install -r requirements.txt
 ```
-## To start the script:
+Then start the script
 ```
 python start_biking.py
 ```

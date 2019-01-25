@@ -10,7 +10,13 @@ pip install -r requirements.txt
 ```
 python start_biking.py
 ```
-## To compile using pyinstaller:
+## To compile using pyinstaller (automatic):
+Run pyinstaller on the .spec file.
+```
+pyinstaller start_biking.spec -F
+```
+
+## To compile using pyinstaller (manual):
 ```
 pyinstaller start_biking.py -F
 ```

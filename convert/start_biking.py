@@ -5,28 +5,34 @@ from pandas import ExcelWriter
 import glob
 import os
 
-def user_input(): #prompt data_manip() integers
-    manip = input("Would you like to clean the HR/cadence data? (Press 1 for yes, 2 for no): ")
+
+def user_input():  # prompt data_manip() integers
+    manip = input(
+        "Would you like to clean the HR/cadence data? (Press 1 for yes, 2 for no): ")
     manip = int(manip)
     if manip == 1:
         print('-------------------------------------------------------------')
-        low_HR = input("All HR should be replaced with '0' if they are less than: ") #
+        low_HR = input(
+            "All HR should be replaced with '0' if they are less than: ")
         low_HR = int(low_HR)
-        high_HR = input("All HR should be replaced with '0' if they are greater than: ")
+        high_HR = input(
+            "All HR should be replaced with '0' if they are greater than: ")
         high_HR = int(high_HR)
-        low_Cadence = input("All rows will be deleted if the Cadence there is less than: ")
+        low_Cadence = input(
+            "All rows will be deleted if the Cadence there is less than: ")
         low_Cadence = int(low_Cadence)
         print('-------------------------------------------------------------')
-        print("I will replace HR <", low_HR,"bpm or >", high_HR, "bpm with a '0'")
+        print("I will replace HR <", low_HR,
+              "bpm or >", high_HR, "bpm with a '0'")
         print("I will delete rows who's cadence is <", low_Cadence)
-        print('-------------------------------------------------------------')      
+        print('-------------------------------------------------------------')
         confirm = input("Press 1 to confirm or 2 to start over: ")
         confirm = int(confirm)
         if confirm == 1:
             reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip)
         if confirm == 2:
             user_input()
-     
+
     if manip == 2:
         confirm = input("Press 1 to confirm or 2 to start over: ")
         confirm = int(confirm)
@@ -34,12 +40,14 @@ def user_input(): #prompt data_manip() integers
             reorg_excels_no_manip(manip)
         if confirm == 2:
             user_input()
-        
+
+
 def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip):
-    path = 'input' #where the raw csv files are located
-    all_files = glob.glob(os.path.join(path, "*.csv")) #make a list of paths
+    path = 'input'  # where the raw csv files are located
+    all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
     for files in all_files:
-        csv_file = os.path.splitext(os.path.basename(files))[0] #get file name without extension
+        csv_file = os.path.splitext(os.path.basename(files))[
+            0]  # get file name without extension
         ext_dic = extract_df(csv_file)
         #-- Extract the dictionary into its variables --#
         HR = ext_dic['HR']
@@ -52,11 +60,13 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip):
         print(csv_file + ".csv reorganized!")
     combine_excels(manip)
 
+
 def reorg_excels_no_manip(manip):
-    path = 'input' #where the raw csv files are located
-    all_files = glob.glob(os.path.join(path, "*.csv")) #make a list of paths
+    path = 'input'  # where the raw csv files are located
+    all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
     for files in all_files:
-        csv_file = os.path.splitext(os.path.basename(files))[0] #get file name without extension
+        csv_file = os.path.splitext(os.path.basename(files))[
+            0]  # get file name without extension
         ext_dic = extract_df(csv_file)
         #-- Extract the dictionary into its variables --#
         HR = ext_dic['HR']
@@ -69,6 +79,7 @@ def reorg_excels_no_manip(manip):
         print(csv_file + ".csv reorganized!")
     combine_excels(manip)
 
+
 def combine_excels(manip):
     all_data = pd.DataFrame()
     for f in glob.glob('output/*.xlsx'):
@@ -77,9 +88,11 @@ def combine_excels(manip):
     #--- Convert Dataframe to Excel ---#
     if manip == 1:
         writer = pd.ExcelWriter('combined_data_manip.xlsx')
-        all_data.to_excel(writer,sheet_name='Sheet1', index=False) #save without name of columns and the row-numbers
+        # save without name of columns and the row-numbers
+        all_data.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()
-        again = input("Finished! Press 1 to quit or 2 to start again: ") #only quit when prompted
+        # only quit when prompted
+        again = input("Finished! Press 1 to quit or 2 to start again: ")
         again = int(again)
         if again == 2:
             user_input()
@@ -87,13 +100,17 @@ def combine_excels(manip):
             quit
     if manip == 2:
         writer = pd.ExcelWriter('combined_data_raw.xlsx')
-        all_data.to_excel(writer,sheet_name='Sheet1', index=False) #save without name of columns and the row-numbers
+        # save without name of columns and the row-numbers
+        all_data.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()
         print("combined_data_raw.xlsx saved!")
-        again = input("Finished! Press 1 to quit or 2 to start again: ") #only quit when prompted
+        # only quit when prompted
+        again = input("Finished! Press 1 to quit or 2 to start again: ")
         again = int(again)
         if again == 2:
             user_input()
         else:
             quit
+
+
 user_input()

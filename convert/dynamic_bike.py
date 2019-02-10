@@ -4,20 +4,24 @@ from pandas import ExcelWriter
 
 #--- Manipulate an Excel File ---#
 
+
 def extract_df(csv_file):
     csv_file2 = 'input\\' + csv_file + '.csv'
-    sheet = pd.read_csv(csv_file2, delimiter=',') #import csv page. Sheetname refers to sheet in file
-    tag = sheet.set_index(['Tag']) #set Tag column as the default index
+    # import csv page. Sheetname refers to sheet in file
+    sheet = pd.read_csv(csv_file2, delimiter=',')
+    tag = sheet.set_index(['Tag'])  # set Tag column as the default index
 
     # NOTE: use isin to iterate: tag.loc['item one','item two']
     HR = tag.loc['{[CompactLogix]Heart_Rate}'].set_index(';Date')
-    HR.rename(columns={'Value':'HR'}, inplace=True)
+    HR.rename(columns={'Value': 'HR'}, inplace=True)
     Cadence = tag.loc['{[CompactLogix]Rider_Cadence}'].set_index(';Date')
-    Cadence.rename(columns={'Value':'Cadence'}, inplace=True)
-    Power = tag.loc['{[CompactLogix]Actual_Power}'].set_index(';Date') #select all rows that have this tag
-    Power.rename(columns={'Value':'Power'}, inplace=True) #rename Value column to Power
+    Cadence.rename(columns={'Value': 'Cadence'}, inplace=True)
+    Power = tag.loc['{[CompactLogix]Actual_Power}'].set_index(
+        ';Date')  # select all rows that have this tag
+    # rename Value column to Power
+    Power.rename(columns={'Value': 'Power'}, inplace=True)
     Torque = tag.loc['{[CompactLogix]Actual_Torque}'].set_index(';Date')
-    Torque.rename(columns={'Value':'Torque'}, inplace=True)
+    Torque.rename(columns={'Value': 'Torque'}, inplace=True)
     ext_dic = {
         'HR': HR,
         'Cadence': Cadence,
@@ -26,27 +30,30 @@ def extract_df(csv_file):
     }
     return ext_dic
 
+
 def merge_df(HR, Cadence, Power, Torque, csv_file):
     #--- Merge Dataframes ---#
     subject_data = pd.merge(HR,
-                    Cadence[['Time','Cadence']],
-                    on='Time')
-    subject_data = pd.merge(subject_data, #left dataframe to merge to
-                    Power[['Time','Power']], #Right dataframe: select two columns 
-                    on='Time') #merge based on matching "Time" column
+                            Cadence[['Time', 'Cadence']],
+                            on='Time')
+    subject_data = pd.merge(subject_data,  # left dataframe to merge to
+                            # Right dataframe: select two columns
+                            Power[['Time', 'Power']],
+                            on='Time')  # merge based on matching "Time" column
     subject_data = pd.merge(subject_data,
-                    Torque[['Time','Torque']],
-                    on='Time')
+                            Torque[['Time', 'Torque']],
+                            on='Time')
 
-    #subject_data.insert(0,'Name',csv_file)
+    # subject_data.insert(0,'Name',csv_file)
     del subject_data['Torque']
     return subject_data
 
+
 def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip):
     df = subject_data
-    #df = df.drop(df[(df.Power <= 0) & (df.Cadence < 15)].index) # saved for posterity
+    # df = df.drop(df[(df.Power <= 0) & (df.Cadence < 15)].index) # saved for posterity
     df = df.drop(df[(df.Cadence <= low_Cadence)].index)
-    #df = df.drop(df[(df.Marker == 'E') | (df.Marker == 'B')].index) # saved for posterity
+    # df = df.drop(df[(df.Marker == 'E') | (df.Marker == 'B')].index) # saved for posterity
     mask = df.HR > high_HR
     column_name = 'HR'
     df.loc[mask, column_name] = 0
@@ -55,6 +62,7 @@ def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip):
     df.loc[mask, column_name] = 0
     subject_data = df
     save_excel(subject_data, csv_file, manip)
+
 
 def save_excel(subject_data, csv_file, manip):
     del subject_data['Time']
@@ -66,11 +74,13 @@ def save_excel(subject_data, csv_file, manip):
         csv_file = 'output\\' + csv_file + '_new.xlsx'
         #--- Convert Dataframe to Excel ---#
         writer = ExcelWriter(csv_file)
-        subject_data.to_excel(writer,sheet_name='Sheet1', index=False) #, header=False) #save without name of columns and the row-numbers
+        # , header=False) #save without name of columns and the row-numbers
+        subject_data.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()
     if manip == 2:
         csv_file = 'output\\raw_reorg\\' + csv_file + '_new_raw.xlsx'
         #--- Convert Dataframe to Excel ---#
         writer = ExcelWriter(csv_file)
-        subject_data.to_excel(writer,sheet_name='Sheet1', index=False) #, header=False) #save without name of columns and the row-numbers
+        # , header=False) #save without name of columns and the row-numbers
+        subject_data.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()

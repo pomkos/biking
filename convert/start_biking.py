@@ -77,7 +77,14 @@ def reorg_excels_no_manip(manip):
         subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
         save_excel(subject_data, csv_file, manip)
         print(csv_file + ".csv reorganized!")
-    combine_excels(manip)
+    combine = input("Finished! Press 1 to quit, 2 to start again, or 3 to combine all files into one: ")
+    combine = int(combine)
+    if combine == 1:
+        quit
+    elif combine == 2:
+        user_input()
+    elif combine == 3:
+        combine_excels(manip)
 
 
 def combine_excels(manip):

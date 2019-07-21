@@ -1,6 +1,6 @@
 Combine different excel files, reformat it, and clean data appropriately for eventual usage in SPSS/R.
 
-sss
+
 # How to
 
 ## Start the script:

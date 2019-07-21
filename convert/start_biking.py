@@ -81,12 +81,14 @@ def reorg_excels_no_manip(manip):
 
 
 def combine_excels(manip):
+    path1 = 'output/'
+    path2 = 'output/raw_reorg/'
     all_data = pd.DataFrame()
-    for f in glob.glob('output/*.xlsx'):
-        df = pd.read_excel(f)
-        all_data = all_data.append(df, ignore_index=True)
     #--- Convert Dataframe to Excel ---#
     if manip == 1:
+        for f in glob.glob(os.path.join(path1, '*.xlsx')):
+            df = pd.read_excel(f)
+            all_data = all_data.append(df, ignore_index=True)
         writer = pd.ExcelWriter('combined_data_manip.xlsx')
         # save without name of columns and the row-numbers
         all_data.to_excel(writer, sheet_name='Sheet1', index=False)
@@ -99,6 +101,9 @@ def combine_excels(manip):
         else:
             quit
     if manip == 2:
+        for f in glob.glob(os.path.join(path2, '*.xlsx')):
+            df = pd.read_excel(f)
+            all_data = all_data.append(df, ignore_index=True)
         writer = pd.ExcelWriter('combined_data_raw.xlsx')
         # save without name of columns and the row-numbers
         all_data.to_excel(writer, sheet_name='Sheet1', index=False)

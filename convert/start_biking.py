@@ -4,18 +4,23 @@ import pandas as pd
 from pandas import ExcelWriter
 import glob
 import os
-
+import sys
 import PySimpleGUI as sg      
 
 
 def user_input(): # GUI testing
+    event, values = sg.Window('Data Chooser').Layout([[sg.Text('Folder with raw bike files')],
+                                                [sg.In(), sg.FolderBrowse()],
+                                                [sg.CloseButton('Open'), sg.CloseButton('Cancel')]]).Read()
+    raw_folder = values[0]
+    print(raw_folder)
+
     layout = [[sg.Text('Would you like to clean your data?')],      
                     [sg.Radio('Yes!', "RADIO1", default=True),
                     sg.Radio('No!', "RADIO1")],
                     [sg.Submit()]]      
     window = sg.Window('Bike Data Tool', layout)    
     event, values = window.Read()   
-    print(event) 
     window.Close()
     manip = values[0]    
     if manip == True:
@@ -33,49 +38,14 @@ def user_input(): # GUI testing
         high_HR = int(values[1])
         low_Cadence = int(values[2])
     ### Confirmation GUI still needed ###
-        reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip)
+        reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder)
 
 
     if manip == False:
-        reorg_excels_no_manip(manip)
+        reorg_excels_no_manip(manip, raw_folder)
 
-def user_input2():  # prompt data_manip() integers
-    manip = input(
-        "Would you like to clean the HR/cadence data? (Press 1 for yes, 2 for no): ")
-    manip = int(manip) 
-    if manip == 1:
-        print('-------------------------------------------------------------')
-        low_HR = input(
-            "All HR should be replaced with '0' if they are less than: ")
-        low_HR = int(low_HR)
-        high_HR = input(
-            "All HR should be replaced with '0' if they are greater than: ")
-        high_HR = int(high_HR)
-        low_Cadence = input(
-            "All rows will be deleted if the Cadence there is less than: ")
-        low_Cadence = int(low_Cadence)
-        print('-------------------------------------------------------------')
-        print("I will replace HR <", low_HR,
-              "bpm or >", high_HR, "bpm with a '0'")
-        print("I will delete rows who's cadence is <", low_Cadence)
-        print('-------------------------------------------------------------')
-        confirm = input("Press 1 to confirm or 2 to start over: ")
-        confirm = int(confirm)
-        if confirm == 1:
-            reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip)
-        if confirm == 2:
-            user_input()
-
-    if manip == 2:
-        confirm = input("Press 1 to confirm or 2 to start over: ")
-        confirm = int(confirm)
-        if confirm == 1:
-            reorg_excels_no_manip(manip)
-        if confirm == 2:
-            user_input()
-
-def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip):
-    path = 'input'  # where the raw csv files are located
+def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder):
+    path = raw_folder  # where the raw csv files are located
     all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
     for files in all_files:
         csv_file = os.path.splitext(os.path.basename(files))[
@@ -110,8 +80,8 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip):
     combine_excels(manip)
 
  
-def reorg_excels_no_manip(manip):
-    path = 'input'  # where the raw csv files are located
+def reorg_excels_no_manip(manip, raw_folder):
+    path = raw_folder  # where the raw csv files are located
     all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
 
     for files in all_files:

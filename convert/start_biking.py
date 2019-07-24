@@ -7,24 +7,32 @@ import os
 import sys
 import PySimpleGUI as sg      
 
-
-def user_input(): # GUI testing
-    event, values = sg.Window('Data Chooser').Layout([[sg.Text('Folder with raw bike files')],
+def start():
+    ## Define input and output folders
+    event, values = sg.Window('Data Chooser').Layout([[sg.Text('Input folder')],
                                                 [sg.In(), sg.FolderBrowse()],
-                                                [sg.Text('Where should I save the new bike files?')],
+                                                [sg.Text('Output folder')],
                                                 [sg.In(), sg.FolderBrowse()],
                                                 [sg.CloseButton('Open'), sg.CloseButton('Cancel')]]).Read()
     raw_folder = values[0]
     output_folder=values[1]
-    
-    layout = [[sg.Text('Would you like to clean your data?')],      
-                    [sg.Radio('Yes!', "RADIO1", default=True),
-                    sg.Radio('No!', "RADIO1")],
+
+    if event == 'Open':
+        ## Choose Options
+        layout = [[sg.Text('Would you like to clean your data?')],      
+                    [sg.Radio('Yes', "RADIO1", default=True),
+                    sg.Radio('No', "RADIO1")],
                     [sg.Submit()]]      
-    window = sg.Window('Bike Data Tool', layout)    
-    event, values = window.Read()   
-    window.Close()
-    manip = values[0]    
+        window = sg.Window('Bike Data Tool', layout)    
+        event, values = window.Read()   
+        window.Close()
+        manip = values[0]
+
+        user_input(raw_folder,output_folder,manip)
+    else:
+        quit
+
+def user_input(raw_folder, output_folder, manip):     
     if manip == True:
     ### Info Gather GUI ###
         layout = [      
@@ -41,7 +49,6 @@ def user_input(): # GUI testing
         low_Cadence = int(values[2])
     ### Confirmation GUI still needed ###
         reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder)
-
 
     if manip == False:
         reorg_excels_no_manip(manip, raw_folder, output_folder)
@@ -78,7 +85,7 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
     elif combine == 'Combine Files':
         combine_excels(manip, output_folder)
     elif combine == 'Start Over':
-        user_input()
+        start()
 
  
 def reorg_excels_no_manip(manip, raw_folder, output_folder):
@@ -114,7 +121,7 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder):
     elif combine == 'Combine Files':
         combine_excels(manip, output_folder)
     elif combine == 'Start Over':
-        user_input()
+        start()
 
 def combine_excels(manip, output_folder):
     path = output_folder
@@ -139,7 +146,7 @@ def combine_excels(manip, output_folder):
         
         again = values[0]
         if again == False:
-            user_input()
+            start()
         else:
             quit
     if manip == False:
@@ -157,13 +164,12 @@ def combine_excels(manip, output_folder):
                     [sg.Submit(), sg.Cancel()]]      
         window = sg.Window('Finished!', layout)
         event, values = window.Read()
-        print(event)
         window.Close()
         
         again = values[0]
         if again == False:
-            user_input()
+            start()
         else:
             quit
 
-user_input()
+start()

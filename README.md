@@ -17,12 +17,12 @@ python start_biking.py
 ### Automatic:
 Run pyinstaller on the .spec file.
 ```
-pyinstaller start_biking.spec -F
+pyinstaller start_biking.spec -wF
 ```
 
 ### Manual:
 ```
-pyinstaller start_biking.py -F
+pyinstaller start_biking.py -wF
 ```
 Pyinstaller does not compile pandas in full, the .exe will not work. Edit the start_sbiking.spec and add the following AFTER "block_cipher = None":
 ```
@@ -44,7 +44,7 @@ hiddenimports=['numpy.core._dtype_ctypes']
 
 And then recompile:
 ```
-pyinstaller start_biking.spec -F
+pyinstaller start_biking.spec -wF
 ```
 
 # Notes

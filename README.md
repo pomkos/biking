@@ -2,10 +2,11 @@ Combine different excel files, reformat it, and clean data appropriately for eve
 
 # Features:
 
-* GUI
-* Reorganize all raw bike files into a readable format
+* Use GUI to designate input/output folders, customize settings
 * Option to clean data by designating Cadence and HR limits
 * Option to obtain how many seconds participants were in negative power
+* Option to merge all new bike files into one excel sheet, for SPSS analysis
+* Reorganizes all raw bike files into a readable format
 * Reorganized files are ready to use with MatLab analysis
 
 # How to
@@ -53,11 +54,6 @@ And then recompile:
 ```
 pyinstaller start_biking.spec -wF
 ```
-
-# Notes
-* CSV files must be placed in the "input" folder, under the same directory that the appropriate python script is
-* Reformatted CSV files will be saved as XLSX files in the "output" folder as appropriate
-* The newly created "combined_sheets.xlsx" contains the merged XLSX files, this can be imported into SPSS/R for data analysis
 
 # Output
 

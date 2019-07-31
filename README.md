@@ -1,5 +1,12 @@
 Combine different excel files, reformat it, and clean data appropriately for eventual usage in SPSS/R.
 
+# Features:
+
+* GUI
+* Reorganize all raw bike files into a readable format
+* Option to clean data by designating Cadence and HR limits
+* Option to obtain how many seconds participants were in negative power
+* Reorganized files are ready to use with MatLab analysis
 
 # How to
 

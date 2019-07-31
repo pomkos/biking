@@ -70,6 +70,7 @@ def save_excel(subject_data, csv_file, manip, output_folder):
     del subject_data['Status']
     del subject_data['Marker']
     subject_data['ID'] = csv_file
+
     if manip == True:
         csv_file = output_folder + '\\' + csv_file + '_new.xlsx'
         #--- Convert Dataframe to Excel ---#

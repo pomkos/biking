@@ -22,17 +22,20 @@ def start():
         layout = [[sg.Text('Would you like to clean your data?')],      
                     [sg.Radio('Yes', "RADIO1", default=True),
                     sg.Radio('No', "RADIO1")],
+                    [sg.Text('Would you like to count the number of lines with Power < 0?')],
+                    [sg.Radio('Yes', "RADIO2", default=True),
+                    sg.Radio('No', "RADIO2")],
                     [sg.Submit()]]      
         window = sg.Window('Bike Data Tool', layout)    
         event, values = window.Read()   
         window.Close()
         manip = values[0]
-
-        user_input(raw_folder,output_folder,manip)
+        timeQ = values[2]
+        user_input(raw_folder,output_folder,manip, timeQ)
     else:
         quit
 
-def user_input(raw_folder, output_folder, manip):     
+def user_input(raw_folder, output_folder, manip, timeQ):     
     if manip == True:
     ### Info Gather GUI ###
         layout = [      
@@ -48,12 +51,13 @@ def user_input(raw_folder, output_folder, manip):
         high_HR = int(values[1])
         low_Cadence = int(values[2])
     ### Confirmation GUI still needed ###
-        reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder)
+        reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder, timeQ)
 
     if manip == False:
-        reorg_excels_no_manip(manip, raw_folder, output_folder)
+        reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ)
 
-def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder):
+def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder, timeQ):
+    neg_pow_df = pd.DataFrame()
     path = raw_folder  # where the raw csv files are located
     all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
     for files in all_files:
@@ -68,27 +72,13 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
         #--   --#
         subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
         data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder)
+        if timeQ == True:
+            neg_pow_df2 = powerQ(subject_data, neg_pow_df)
         print(csv_file + ".csv reorganized!")
-    #### Finished Window with Options ###
-    layout = [[sg.Text('Finished! What would you like to do next?')],
-                [sg.Combo(['Quit', 'Combine Files','Start Over'])],       
-                [sg.Submit(), sg.Cancel()]
-             ]      
-    window = sg.Window('File Restructuring Finished!', layout)    
-
-    event, values = window.Read()    
-    window.Close()
-    combine = values[0]
-
-    if combine == 'Quit':
-        quit
-    elif combine == 'Combine Files':
-        combine_excels(manip, output_folder)
-    elif combine == 'Start Over':
-        start()
-
+    finished(manip, output_folder, neg_pow_df2, timeQ)
  
-def reorg_excels_no_manip(manip, raw_folder, output_folder):
+def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
+    neg_pow_df = pd.DataFrame()
     path = raw_folder  # where the raw csv files are located
     all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
 
@@ -103,8 +93,28 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder):
         #--   --#
         subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
         save_excel(subject_data, csv_file, manip, output_folder)
+        if timeQ == True:
+            neg_pow_df2 = powerQ(subject_data, neg_pow_df)
         print(csv_file + ".csv reorganized!")
+    finished(manip, output_folder, neg_pow_df2, timeQ)
+
+def powerQ(subject_data, neg_pow_df):
+    time = subject_data[subject_data.Power < 0].shape[0] # time on bike where Power is less than 0
+    data = [(subject_data['ID'][1],time)]
+    neg_pow_df = neg_pow_df.append(data)
+    return neg_pow_df
+
+def powerQ_save(neg_pow_df2, output_folder):
+    neg_pow_loc = output_folder + '/' + 'neg_power.xlsx'
+    writer = pd.ExcelWriter(neg_pow_loc)
+    # save without name of columns and the row-numbers
+    neg_pow_df2.to_excel(writer, sheet_name='Sheet1', index=False)
+    writer.save()
+
     
+def finished(manip, output_folder, neg_pow_df2, timeQ):
+    if timeQ == True:
+        powerQ_save(neg_pow_df2, output_folder)
     #### Finished Window with Options ###
     layout = [[sg.Text('Finished! What would you like to do next?')],
                 [sg.Combo(['Quit', 'Combine Files','Start Over'])],       
@@ -114,6 +124,7 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder):
 
     event, values = window.Read()    
     window.Close()
+    
     combine = values[0]
 
     if combine == 'Quit':

@@ -73,9 +73,10 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
         subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
         data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder)
         if timeQ == True:
-            neg_pow_df2 = powerQ(subject_data, neg_pow_df)
+            data = powerQ(subject_data)
+            neg_pow_df = neg_pow_df.append(data)
         print(csv_file + ".csv reorganized!")
-    finished(manip, output_folder, neg_pow_df2, timeQ)
+    finished(manip, output_folder, neg_pow_df, timeQ)
  
 def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
     neg_pow_df = pd.DataFrame()
@@ -94,27 +95,27 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
         subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
         save_excel(subject_data, csv_file, manip, output_folder)
         if timeQ == True:
-            neg_pow_df2 = powerQ(subject_data, neg_pow_df)
+            data = powerQ(subject_data)
+            neg_pow_df = neg_pow_df.append(data)
         print(csv_file + ".csv reorganized!")
-    finished(manip, output_folder, neg_pow_df2, timeQ)
+    finished(manip, output_folder, neg_pow_df, timeQ)
 
-def powerQ(subject_data, neg_pow_df):
+def powerQ(subject_data):
     time = subject_data[subject_data.Power < 0].shape[0] # time on bike where Power is less than 0
     data = [(subject_data['ID'][1],time)]
-    neg_pow_df = neg_pow_df.append(data)
-    return neg_pow_df
+    return data
 
-def powerQ_save(neg_pow_df2, output_folder):
+def powerQ_save(neg_pow_df, output_folder):
     neg_pow_loc = output_folder + '/' + 'neg_power.xlsx'
     writer = pd.ExcelWriter(neg_pow_loc)
-    # save without name of columns and the row-numbers
-    neg_pow_df2.to_excel(writer, sheet_name='Sheet1', index=False)
+    neg_pow_df.columns = ['ID', 'Seconds of NegPow']
+    neg_pow_df.to_excel(writer, sheet_name='Sheet1', index=False)
     writer.save()
 
     
-def finished(manip, output_folder, neg_pow_df2, timeQ):
+def finished(manip, output_folder, neg_pow_df, timeQ):
     if timeQ == True:
-        powerQ_save(neg_pow_df2, output_folder)
+        powerQ_save(neg_pow_df, output_folder)
     #### Finished Window with Options ###
     layout = [[sg.Text('Finished! What would you like to do next?')],
                 [sg.Combo(['Quit', 'Combine Files','Start Over'])],       

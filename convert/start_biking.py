@@ -103,9 +103,7 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
 
 def powerQ(subject_data):
     time = subject_data[subject_data.Power < 0].shape[0] # time on bike where Power is less than 0
-    print(subject_data)
     data = [(subject_data['ID'][1],time)]
-    print(data)
     return data
 
 def powerQ_save(neg_pow_df, output_folder):

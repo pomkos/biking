@@ -52,7 +52,7 @@ def merge_df(HR, Cadence, Power, Torque, csv_file):
 def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder):
     df = subject_data
     # df = df.drop(df[(df.Power <= 0) & (df.Cadence < 15)].index) # saved for posterity
-    df = df.drop(df[(df.Cadence <= low_Cadence)].index)
+    df = df.drop(df[(df.Cadence <= low_Cadence)].index).reset_index()
     # df = df.drop(df[(df.Marker == 'E') | (df.Marker == 'B')].index) # saved for posterity
     mask = df.HR > high_HR
     column_name = 'HR'

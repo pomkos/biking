@@ -4,7 +4,6 @@ from pandas import ExcelWriter
 
 #--- Manipulate an Excel File ---#
 
-
 def extract_df(csv_file, raw_folder):
     csv_file2 = raw_folder + '/' + csv_file + '.csv'
     # import csv page. Sheetname refers to sheet in file

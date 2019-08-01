@@ -106,17 +106,19 @@ def powerQ(subject_data):
     data = [(subject_data['ID'][1],time)]
     return data
 
-def powerQ_save(neg_pow_df, output_folder):
-    neg_pow_loc = output_folder + '/' + '[neg_power].xlsx'
+def powerQ_save(neg_pow_df, output_folder, manip):
+    if manip == True:
+        neg_pow_loc = output_folder + '/' + '[neg_power_manip].xlsx'
+    if manip == False:
+        neg_pow_loc = output_folder + '/' + '[neg_power_raw].xlsx'
     writer = pd.ExcelWriter(neg_pow_loc)
     neg_pow_df.columns = ['ID', 'Seconds of NegPow']
     neg_pow_df.to_excel(writer, sheet_name='Sheet1', index=False)
     writer.save()
-
     
 def finished(manip, output_folder, neg_pow_df, timeQ):
     if timeQ == True:
-        powerQ_save(neg_pow_df, output_folder)
+        powerQ_save(neg_pow_df, output_folder, manip)
     #### Finished Window with Options ###
     layout = [[sg.Text('Finished! What would you like to do next?')],
                 [sg.Combo(['Quit', 'Combine Files','Start Over'])],       

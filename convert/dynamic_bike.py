@@ -61,8 +61,7 @@ def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, outp
     column_name = 'HR'
     df.loc[mask, column_name] = 0
     subject_data = df
-    save_excel(subject_data, csv_file, manip, output_folder)
-
+    return subject_data
 
 def save_excel(subject_data, csv_file, manip, output_folder):
     del subject_data['Time']

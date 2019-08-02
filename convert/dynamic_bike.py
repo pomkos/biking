@@ -4,7 +4,6 @@ from pandas import ExcelWriter
 
 #--- Manipulate an Excel File ---#
 
-
 def extract_df(csv_file, raw_folder):
     csv_file2 = raw_folder + '/' + csv_file + '.csv'
     # import csv page. Sheetname refers to sheet in file
@@ -52,7 +51,7 @@ def merge_df(HR, Cadence, Power, Torque, csv_file):
 def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder):
     df = subject_data
     # df = df.drop(df[(df.Power <= 0) & (df.Cadence < 15)].index) # saved for posterity
-    df = df.drop(df[(df.Cadence <= low_Cadence)].index)
+    df = df.drop(df[(df.Cadence <= low_Cadence)].index).reset_index(drop=True)
     # df = df.drop(df[(df.Marker == 'E') | (df.Marker == 'B')].index) # saved for posterity
     mask = df.HR > high_HR
     column_name = 'HR'
@@ -61,8 +60,7 @@ def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, outp
     column_name = 'HR'
     df.loc[mask, column_name] = 0
     subject_data = df
-    save_excel(subject_data, csv_file, manip, output_folder)
-
+    return subject_data
 
 def save_excel(subject_data, csv_file, manip, output_folder):
     del subject_data['Time']

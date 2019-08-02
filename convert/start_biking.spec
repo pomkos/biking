@@ -1,4 +1,4 @@
-# -*- mode: python -*-
+# -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
 
@@ -8,7 +8,7 @@ def get_pandas_path():
     return pandas_path
 
 a = Analysis(['start_biking.py'],
-             pathex=['C:\\Users\\albei\\Documents\\github\\biking\\convert'],
+             pathex=['C:\\Users\\albei\\OneDrive\\Documents\\Github\\biking\\convert'],
              binaries=[],
              datas=[],
              hiddenimports=['numpy.core._dtype_ctypes'],
@@ -37,5 +37,6 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
+          upx_exclude=[],
           runtime_tmpdir=None,
           console=False )

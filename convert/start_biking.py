@@ -71,7 +71,8 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
         Torque = ext_dic['Torque']
         #--   --#
         subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
-        data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder)
+        subject_data = data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder)
+        save_excel(subject_data, csv_file, manip, output_folder)
         if timeQ == True:
             data = powerQ(subject_data)
             neg_pow_df = neg_pow_df.append(data)
@@ -105,17 +106,19 @@ def powerQ(subject_data):
     data = [(subject_data['ID'][1],time)]
     return data
 
-def powerQ_save(neg_pow_df, output_folder):
-    neg_pow_loc = output_folder + '/' + 'neg_power.xlsx'
+def powerQ_save(neg_pow_df, output_folder, manip):
+    if manip == True:
+        neg_pow_loc = output_folder + '/' + '[neg_power_manip].xlsx'
+    if manip == False:
+        neg_pow_loc = output_folder + '/' + '[neg_power_raw].xlsx'
     writer = pd.ExcelWriter(neg_pow_loc)
     neg_pow_df.columns = ['ID', 'Seconds of NegPow']
     neg_pow_df.to_excel(writer, sheet_name='Sheet1', index=False)
     writer.save()
-
     
 def finished(manip, output_folder, neg_pow_df, timeQ):
     if timeQ == True:
-        powerQ_save(neg_pow_df, output_folder)
+        powerQ_save(neg_pow_df, output_folder, manip)
     #### Finished Window with Options ###
     layout = [[sg.Text('Finished! What would you like to do next?')],
                 [sg.Combo(['Quit', 'Combine Files','Start Over'])],       
@@ -143,13 +146,13 @@ def combine_excels(manip, output_folder):
         for f in glob.glob(os.path.join(path, '*_new.xlsx')):
             df = pd.read_excel(f)
             all_data = all_data.append(df, ignore_index=True)
-        all_manip = output_folder + '/' + 'combined_data_manip.xlsx'
+        all_manip = output_folder + '/' + '[combined_data_manip].xlsx'
         writer = pd.ExcelWriter(all_manip)
         # save without name of columns and the row-numbers
         all_data.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()
         ### Finished Notification GUI ###
-        layout = [[sg.Text('Finished! Your new file saved as combined_data_manip.xlsx')],
+        layout = [[sg.Text('Finished! Your new file saved as [combined_data_manip].xlsx')],
                     [sg.Radio('Quit', "RADIO1", default=False, size=(10,1)), sg.Radio('Start Over', "RADIO1")],
                     [sg.Submit(), sg.Cancel()]]      
         window = sg.Window('Finished!', layout)
@@ -165,13 +168,13 @@ def combine_excels(manip, output_folder):
         for f in glob.glob(os.path.join(path, '*_new_raw.xlsx')):
             df = pd.read_excel(f)
             all_data = all_data.append(df, ignore_index=True)
-        all_manip = output_folder + '/' + 'combined_data_raw.xlsx'
+        all_manip = output_folder + '/' + '[combined_data_raw].xlsx'
         writer = pd.ExcelWriter(all_manip)
         # save without name of columns and the row-numbers
         all_data.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()
         ### Finished Notification GUI ###
-        layout = [[sg.Text('Finished! Your new file saved as combined_data_raw.xlsx')],
+        layout = [[sg.Text('Finished! Your new file saved as [combined_data_raw].xlsx')],
                     [sg.Radio('Quit', "RADIO1", default=False, size=(10,1)), sg.Radio('Start Over', "RADIO1")],
                     [sg.Submit(), sg.Cancel()]]      
         window = sg.Window('Finished!', layout)

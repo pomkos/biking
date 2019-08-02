@@ -2,3 +2,4 @@ NumPy
 pandas
 openpyxl
 xlrd
+pysimplegui

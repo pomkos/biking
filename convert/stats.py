@@ -1,20 +1,19 @@
-import PySimpleGUI as sg
+import PySimpleGUI as sg      
 
-layout = [[sg.Text('Your print statements appear here:'), sg.Text('', size=(15,1), key='_OUTPUT_')],
-          [sg.Input()],
-          [sg.Button('Show'), sg.Button('Exit')]]
+# layout the Window
+layout = [[sg.Text('A custom progress meter')],
+          [sg.ProgressBar(1000, orientation='h', size=(20, 20), key='progbar')],
+          [sg.Cancel()]]
 
-window = sg.Window('Window Title', layout)
-
-while True:  # Event Loop
-    event, values = window.Read()
-    values_added = int(values[0]) + 2
-    print(values_added)
-    #print(event, values)
-    if event is None or event == 'Exit':
+# create the Window
+window = sg.Window('Custom Progress Meter', layout)
+# loop that would normally do something useful
+for i in range(1000):
+    # check to see if the cancel button was clicked and exit loop if clicked
+    event, values = window.Read(timeout=0)
+    if event == 'Cancel' or event is None:
         break
-    if event == 'Show':
-        # Update the "output" element to be the value of "input" element
-        window.Element('_OUTPUT_').Update(values_added)
-
+        # update bar with loop value +1 so that bar eventually reaches the maximum
+    window.Element('progbar').UpdateBar(i + 1)
+# done with loop... need to destroy the window as it's still open
 window.Close()

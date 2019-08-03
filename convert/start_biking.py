@@ -121,21 +121,20 @@ def finished(manip, output_folder, neg_pow_df, timeQ):
         powerQ_save(neg_pow_df, output_folder, manip)
     #### Finished Window with Options ###
     layout = [[sg.Text('Finished! What would you like to do next?')],
-                [sg.Combo(['Quit', 'Combine Files','Start Over'])],       
-                [sg.Submit(), sg.Cancel()]
-             ]      
+                [sg.Radio('Quit', "RADIO1", default=True),
+                sg.Radio('Combine Files', "RADIO1"),
+                sg.Radio ('Start Over', "RADIO1")],
+                [sg.Submit()]]      
     window = sg.Window('File Restructuring Finished!', layout)    
 
     event, values = window.Read()    
     window.Close()
-    
-    combine = values[0]
 
-    if combine == 'Quit':
+    if values[0] == True:
         quit
-    elif combine == 'Combine Files':
+    elif values[1] == True:
         combine_excels(manip, output_folder)
-    elif combine == 'Start Over':
+    elif values[2] == True:
         start()
 
 def combine_excels(manip, output_folder):
@@ -154,7 +153,7 @@ def combine_excels(manip, output_folder):
         ### Finished Notification GUI ###
         layout = [[sg.Text('Finished! Your new file saved as [combined_data_manip].xlsx')],
                     [sg.Radio('Quit', "RADIO1", default=False, size=(10,1)), sg.Radio('Start Over', "RADIO1")],
-                    [sg.Submit(), sg.Cancel()]]      
+                    [sg.Submit()]]      
         window = sg.Window('Finished!', layout)
         event, values = window.Read()    
         window.Close()
@@ -176,7 +175,7 @@ def combine_excels(manip, output_folder):
         ### Finished Notification GUI ###
         layout = [[sg.Text('Finished! Your new file saved as [combined_data_raw].xlsx')],
                     [sg.Radio('Quit', "RADIO1", default=False, size=(10,1)), sg.Radio('Start Over', "RADIO1")],
-                    [sg.Submit(), sg.Cancel()]]      
+                    [sg.Submit()]]      
         window = sg.Window('Finished!', layout)
         event, values = window.Read()
         window.Close()

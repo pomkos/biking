@@ -76,6 +76,23 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
         if timeQ == True:
             data = powerQ(subject_data)
             neg_pow_df = neg_pow_df.append(data)
+        # sg.OneLineProgressMeter('One Line Meter Example', files+1, 'key') add progress bar here
+        
+            # layout = [[sg.Text('Persistent window')],      
+            #         [sg.Input(do_not_clear=True)],      
+            #         [sg.Button('Read'), sg.Exit()]]      
+
+            # window = sg.Window('Window that stays open', layout)      
+
+            # while True:      
+            #     event, values = window.Read()      
+            #     if event is None or event == 'Exit':      
+            #         break      
+            #     print(event, values)    
+
+            # window.Close()
+            
+        # add window with printout feedback here
         print(csv_file + ".csv reorganized!")
     finished(manip, output_folder, neg_pow_df, timeQ)
  

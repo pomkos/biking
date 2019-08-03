@@ -9,6 +9,13 @@ Combine different excel files, reformat it, and clean data appropriately for eve
 * Reorganizes all raw bike files into a readable format
 * Reorganized files are ready to use with MatLab analysis
 
+# To Do:
+
+* Static GUI
+* One GUI for all options
+* Immediate basic statistical analysis
+* Entropy analysis, possibly via MatLab
+
 # How to
 
 ## Start the script:

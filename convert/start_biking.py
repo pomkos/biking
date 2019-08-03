@@ -9,28 +9,24 @@ import PySimpleGUI as sg
 
 def start():
     ## Define input and output folders
-    event, values = sg.Window('Data Chooser').Layout([[sg.Text('Input folder')],
-                                                [sg.In(), sg.FolderBrowse()],
-                                                [sg.Text('Output folder')],
-                                                [sg.In(), sg.FolderBrowse()],
-                                                [sg.CloseButton('Open'), sg.CloseButton('Cancel')]]).Read()
-    raw_folder = values[0]
-    output_folder=values[1]
-
-    if event == 'Open':
-        ## Choose Options
-        layout = [[sg.Text('Would you like to clean your data?')],      
-                    [sg.Radio('Yes', "RADIO1", default=True),
-                    sg.Radio('No', "RADIO1")],
-                    [sg.Text('Would you like to count the number of lines with Power < 0?')],
-                    [sg.Radio('Yes', "RADIO2", default=True),
-                    sg.Radio('No', "RADIO2")],
-                    [sg.Submit()]]      
-        window = sg.Window('Bike Data Tool', layout)    
-        event, values = window.Read()   
-        window.Close()
-        manip = values[0]
-        timeQ = values[2]
+    event, values = sg.Window('Bike Data Tool').Layout([[sg.Text('Input folder')],
+                                                        [sg.In(), sg.FolderBrowse()], #0
+                                                        [sg.Text('Output folder')],
+                                                        [sg.In(), sg.FolderBrowse()], #1
+                                                        [sg.Text('Would you like to clean your data?')],      
+                                                        [sg.Radio('Yes', "RADIO1", default=True), #2
+                                                        sg.Radio('No', "RADIO1")],#3
+                                                        [sg.Text('Would you like to count the number of lines with Power < 0?')],
+                                                        [sg.Radio('Yes', "RADIO2", default=True), #4
+                                                        sg.Radio('No', "RADIO2")],#5
+                                                        [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
+    window = sg.Window('Bike Data Tool')    
+    window.Close()
+    if event == 'Submit':
+        raw_folder = values[0]
+        output_folder=values[1]
+        manip = values[2]
+        timeQ = values[4]
         user_input(raw_folder,output_folder,manip, timeQ)
     else:
         quit
@@ -46,13 +42,14 @@ def user_input(raw_folder, output_folder, manip, timeQ):
         window = sg.Window('Data Cleaning', layout)  
         event, values = window.Read()   
         window.Close()
-
-        low_HR = int(values[0])
-        high_HR = int(values[1])
-        low_Cadence = int(values[2])
-    ### Confirmation GUI still needed ###
-        reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder, timeQ)
-
+        if event == 'Submit':
+            low_HR = int(values[0])
+            high_HR = int(values[1])
+            low_Cadence = int(values[2])
+        ### Confirmation GUI still needed ###
+            reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder, timeQ)
+        else:
+            quit
     if manip == False:
         reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ)
 
@@ -85,11 +82,10 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
             data = powerQ(subject_data)
             neg_pow_df = neg_pow_df.append(data)        
 
-        # Update the progress bar #
+        # Updates the progress bar #
         event, values = window.Read(timeout=0)
         if event == 'Cancel' or event is None:
             break
-        # update bar with loop value +1 so that bar eventually reaches the maximum
         window.Element('progbar').UpdateBar(i)
     finished(manip, output_folder, neg_pow_df, timeQ)
  
@@ -105,7 +101,7 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
             [sg.ProgressBar(count, orientation='h', size=(20, 20), key='progbar')],
             [sg.Cancel()]]
     window = sg.Window('Progress Bar', layout)
-
+    #--   --#
     for files in all_files:
         i = i+1
         csv_file = os.path.splitext(os.path.basename(files))[0]  # get file name without extension
@@ -126,9 +122,8 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
         event, values = window.Read(timeout=0)
         if event == 'Cancel' or event is None:
             break
-        # update bar with loop value +1 so that bar eventually reaches the maximum
         window.Element('progbar').UpdateBar(i)
-
+        #--   --#
         print(csv_file + ".csv reorganized!")
 
 

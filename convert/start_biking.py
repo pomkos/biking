@@ -60,6 +60,7 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
     neg_pow_df = pd.DataFrame()
     path = raw_folder  # where the raw csv files are located
     all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
+    i = 0
     for files in all_files:
         csv_file = os.path.splitext(os.path.basename(files))[
             0]  # get file name without extension
@@ -75,31 +76,19 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
         save_excel(subject_data, csv_file, manip, output_folder)
         if timeQ == True:
             data = powerQ(subject_data)
-            neg_pow_df = neg_pow_df.append(data)
-        # sg.OneLineProgressMeter('One Line Meter Example', files+1, 'key') add progress bar here
-        
-            # layout = [[sg.Text('Persistent window')],      
-            #         [sg.Input(do_not_clear=True)],      
-            #         [sg.Button('Read'), sg.Exit()]]      
-
-            # window = sg.Window('Window that stays open', layout)      
-
-            # while True:      
-            #     event, values = window.Read()      
-            #     if event is None or event == 'Exit':      
-            #         break      
-            #     print(event, values)    
-
-            # window.Close()
-            
+            neg_pow_df = neg_pow_df.append(data)        
         # add window with printout feedback here
         print(csv_file + ".csv reorganized!")
+        i = i+1
+        count = len([name for name in os.listdir(raw_folder) if os.path.isfile(os.path.join(raw_folder, name))])
+        sg.OneLineProgressMeter('One Line Meter Example', i, count, 'key')
     finished(manip, output_folder, neg_pow_df, timeQ)
  
 def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
     neg_pow_df = pd.DataFrame()
     path = raw_folder  # where the raw csv files are located
     all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
+    i = 0
 
     for files in all_files:
         csv_file = os.path.splitext(os.path.basename(files))[0]  # get file name without extension
@@ -115,7 +104,12 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
         if timeQ == True:
             data = powerQ(subject_data)
             neg_pow_df = neg_pow_df.append(data)
+        i = i+1
+        count = len([name for name in os.listdir(raw_folder) if os.path.isfile(os.path.join(raw_folder, name))])
+        sg.OneLineProgressMeter('One Line Meter Example', i, count, 'key')
         print(csv_file + ".csv reorganized!")
+
+
     finished(manip, output_folder, neg_pow_df, timeQ)
 
 def powerQ(subject_data):

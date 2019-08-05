@@ -23,8 +23,10 @@ def start():
     window = sg.Window('Bike Data Tool')    
     window.Close()
     if event == 'Submit':
-        raw_folder = values[0]
-        output_folder=values[1]
+        # raw_folder = values[0]
+        raw_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\input'
+        # output_folder=values[1]
+        output_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\output'
         manip = values[2]
         timeQ = values[4]
         user_input(raw_folder,output_folder,manip, timeQ)
@@ -57,38 +59,60 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
     neg_pow_df = pd.DataFrame()
     path = raw_folder  # where the raw csv files are located
     all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
+    
     # Progress bar window #
     i = 1
     count = len([name for name in os.listdir(raw_folder) if os.path.isfile(os.path.join(raw_folder, name))])
-    layout = [[sg.Text('A custom progress meter')],
+    layout = [[sg.Text('Press start to begin')],
             [sg.ProgressBar(count, orientation='h', size=(20, 20), key='progbar')],
-            [sg.Cancel()]]
-    window = sg.Window('Progress Bar', layout)
-    for files in all_files:
-        i = i+1
-        csv_file = os.path.splitext(os.path.basename(files))[
-            0]  # get file name without extension
-        ext_dic = extract_df(csv_file, raw_folder)
-        #-- Extract the dictionary into its variables --#
-        HR = ext_dic['HR']
-        Cadence = ext_dic['Cadence']
-        Power = ext_dic['Power']
-        Torque = ext_dic['Torque']
-        #--   --#
-        subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
-        subject_data = data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder)
-        save_excel(subject_data, csv_file, manip, output_folder)
-        if timeQ == True:
-            data = powerQ(subject_data)
-            neg_pow_df = neg_pow_df.append(data)        
+            [sg.Output(size=(60,20))],
+            [sg.Button('Start'),
+            sg.Button('Quit')],
+            ]
+    window = sg.Window('Begin Restructuring and Cleaning', layout)
+    #--   --#
+    while True:
+        event,values = window.Read()
+        if event == 'Start' or None:
+            for files in all_files:
+                i = i+1
+                try:
+                    csv_file = os.path.splitext(os.path.basename(files))[
+                        0]  # get file name without extension
+                    ext_dic = extract_df(csv_file, raw_folder)
+                    #-- Extract the dictionary into its variables --#
+                    HR = ext_dic['HR']
+                    Cadence = ext_dic['Cadence']
+                    Power = ext_dic['Power']
+                    Torque = ext_dic['Torque']
+                    #--   --#
+                    subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
+                    subject_data = data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder)
+                    save_excel(subject_data, csv_file, manip, output_folder)
+                    if timeQ == True:
+                        data = powerQ(subject_data)
+                        neg_pow_df = neg_pow_df.append(data)
 
-        # Updates the progress bar #
-        event, values = window.Read(timeout=0)
-        if event == 'Cancel' or event is None:
-            break
-        window.Element('progbar').UpdateBar(i)
-    finished(manip, output_folder, neg_pow_df, timeQ)
- 
+                    # Updates the progress bar #
+                    event, values = window.Read(timeout=0)
+                    if event == 'Cancel' or event is None:
+                        break
+                    window.Element('progbar').UpdateBar(i)
+                    #--    --#
+                    print(csv_file + ".csv reorganized!")
+                except:
+                    csv_file = os.path.splitext(os.path.basename(files))[0]
+                    print('___________________________________')
+                    print('ERROR:')
+                    print('There is a problem with ', csv_file, '.csv')
+                    print('___________________________________')
+                    print(' ')
+                    window.Element('progbar').UpdateBar(i)
+        
+            finished(manip, output_folder, neg_pow_df, timeQ)
+        elif event == 'Quit':
+            raise SystemError(0)
+
 def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
     neg_pow_df = pd.DataFrame()
     path = raw_folder  # where the raw csv files are located
@@ -97,37 +121,52 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
     # Progress bar window #
     i = 1
     count = len([name for name in os.listdir(raw_folder) if os.path.isfile(os.path.join(raw_folder, name))])
-    layout = [[sg.Text('A custom progress meter')],
+    layout = [[sg.Text('Press start to restructure files...')],
             [sg.ProgressBar(count, orientation='h', size=(20, 20), key='progbar')],
-            [sg.Cancel()]]
-    window = sg.Window('Progress Bar', layout)
+            [sg.Output(size=(60,20))],
+            [sg.Button('Start'),
+            sg.Button('Quit')],
+            ]
+    window = sg.Window('Begin Restructuring', layout)
     #--   --#
-    for files in all_files:
-        i = i+1
-        csv_file = os.path.splitext(os.path.basename(files))[0]  # get file name without extension
-        ext_dic = extract_df(csv_file,raw_folder)
-        #-- Extract the dictionary into its variables --#
-        HR = ext_dic['HR']
-        Cadence = ext_dic['Cadence']
-        Power = ext_dic['Power']
-        Torque = ext_dic['Torque']
-        #--   --#
-        subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
-        save_excel(subject_data, csv_file, manip, output_folder)
-        if timeQ == True:
-            data = powerQ(subject_data)
-            neg_pow_df = neg_pow_df.append(data)
-        
-        # Update the progress bar #
-        event, values = window.Read(timeout=0)
-        if event == 'Cancel' or event is None:
-            break
-        window.Element('progbar').UpdateBar(i)
-        #--   --#
-        print(csv_file + ".csv reorganized!")
+    while True:
+        event,values = window.Read()
+        if event == 'Start' or None:
+            for files in all_files:
+                i = i+1
+                try:
+                    csv_file = os.path.splitext(os.path.basename(files))[0]  # get file name without extension
+                    ext_dic = extract_df(csv_file,raw_folder)
+                    #-- Extract the dictionary into its variables --#
+                    HR = ext_dic['HR']
+                    Cadence = ext_dic['Cadence']
+                    Power = ext_dic['Power']
+                    Torque = ext_dic['Torque']
+                    #--   --#
+                    subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
+                    save_excel(subject_data, csv_file, manip, output_folder)
+                    if timeQ == True:
+                        data = powerQ(subject_data)
+                        neg_pow_df = neg_pow_df.append(data)
+                    
+                    # Update the progress bar #
+                    event, values = window.Read(timeout=0)
+                    if event == 'Cancel' or event is None:
+                        break
+                    window.Element('progbar').UpdateBar(i)
+                    #--   --#
+                    print(csv_file + ".csv reorganized!")
+                except:
+                    csv_file = os.path.splitext(os.path.basename(files))[0]
+                    print('___________________________________')
+                    print('ERROR:')
+                    print('There is a problem with ', csv_file, '.csv')
+                    print('___________________________________')
+                    window.Element('progbar').UpdateBar(i)
 
-
-    finished(manip, output_folder, neg_pow_df, timeQ)
+            finished(manip, output_folder, neg_pow_df, timeQ)
+        elif event == 'Quit':
+            raise SystemError(0)
 
 def powerQ(subject_data):
     time = subject_data[subject_data.Power < 0].shape[0] # time on bike where Power is less than 0
@@ -159,7 +198,7 @@ def finished(manip, output_folder, neg_pow_df, timeQ):
     window.Close()
 
     if values[0] == True:
-        quit
+        raise SystemError(0)
     elif values[1] == True:
         combine_excels(manip, output_folder)
     elif values[2] == True:

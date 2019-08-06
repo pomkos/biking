@@ -8,38 +8,72 @@ import sys
 import PySimpleGUI as sg      
 
 def start():
-    ## Define input and output folders
-    event, values = sg.Window('Bike Data Tool').Layout([[sg.Text('Input folder')],
-                                                        [sg.In(), sg.FolderBrowse()], #0
-                                                        [sg.Text('Output folder')],
-                                                        [sg.In(), sg.FolderBrowse()], #1
-                                                        [sg.Text('Would you like to clean your data?')],      
-                                                        [sg.Radio('Yes', "RADIO1", default=True), #2
-                                                        sg.Radio('No', "RADIO1")],#3
-                                                        [sg.Text('Would you like to count the number of lines with Power < 0?')],
-                                                        [sg.Radio('Yes', "RADIO2", default=True), #4
-                                                        sg.Radio('No', "RADIO2")],#5
-                                                        [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
-    window = sg.Window('Bike Data Tool')    
+    event, values = sg.Window('Choice').Layout([[sg.Text('What would you like to do?')],
+                                                [sg.Radio('Reorganize Raw Files', 'RADIO1', default=True),
+                                                sg.Radio('Combine New Files', 'RADIO1')],
+                                                [sg.CloseButton('Submit')]]).Read()
+    window = sg.Window('Bike Data Tool')
     window.Close()
-    if event == 'Submit':
-        # raw_folder = values[0]
-        raw_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\input'
-        # output_folder=values[1]
-        output_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\output'
-        manip = values[2]
-        timeQ = values[4]
-        user_input(raw_folder,output_folder,manip, timeQ)
-    else:
-        quit
+    if values[0] == True:
+        ## Define input and output folders
+        event, values = sg.Window('Bike Data Tool').Layout([[sg.Text('Input folder')],
+                                                            [sg.In(), sg.FolderBrowse()], #0
+                                                            [sg.Text('Output folder')],
+                                                            [sg.In(), sg.FolderBrowse()], #1
+                                                            [sg.Text('Would you like to clean your data?')],      
+                                                            [sg.Radio('Yes', "RADIO1", default=True), #2
+                                                            sg.Radio('No', "RADIO1")],#3
+                                                            [sg.Text('Would you like to count the number of lines with Power < 0?')],
+                                                            [sg.Radio('Yes', "RADIO2", default=True), #4
+                                                            sg.Radio('No', "RADIO2")],#5
+                                                            [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
+        window = sg.Window('Bike Data Tool')    
+        window.Close()
+        if event == 'Submit':
+            # raw_folder = values[0]
+            raw_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\input'
+            # output_folder=values[1]
+            output_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\output'
+            manip = values[2]
+            timeQ = values[4]
+            user_input(raw_folder,output_folder,manip, timeQ)
+        else:
+            quit
+    elif values[1] == True:
+        ## Define input and output folders
+        event, values = sg.Window('Bike Data Combining Tool').Layout([[sg.Text('Which folder are the files in?')],
+                                                            [sg.In(), sg.FolderBrowse()], #0
+                                                            [sg.Text('Has the data been cleaned?')],      
+                                                            [sg.Radio('Yes', "RADIO1", default=True), #1
+                                                            sg.Radio('No', "RADIO1")],#2
+                                                            [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
+        window = sg.Window('Bike Data Combining Tool')    
+        window.Close()
 
+        output_folder = values[0]
+        manip = values[1]
+        if event == 'Submit':
+            combine_excels(manip, output_folder)
+        if event == 'Cancel':
+            raise SystemError(0)
+
+def progressGUI(raw_folder):
+    count = len([name for name in os.listdir(raw_folder) if os.path.isfile(os.path.join(raw_folder, name))])
+    layout = [[sg.Text('Press start to begin')],
+            [sg.ProgressBar(count, orientation='h', size=(20, 20), key='progbar')],
+            [sg.Output(size=(60,20))],
+            [sg.Button('Start'),
+            sg.Button('Quit')],
+            ]
+    window = sg.Window('Begin Restructuring and Cleaning', layout)
+    return window
 def user_input(raw_folder, output_folder, manip, timeQ):     
     if manip == True:
     ### Info Gather GUI ###
         layout = [      
-            [sg.Text('Replace all HR with "0" if they are <:', size=(27, 1)), sg.InputText()],      
-            [sg.Text('Replace all HR with "0" if they are >:', size=(27, 1)), sg.InputText()],      
-            [sg.Text('All rows will be deleted if the Cadence there is less than:', size=(27, 2)), sg.InputText()],      
+            [sg.Text('Replace all HR with "NaN" if they are <:', size=(30, 1)), sg.InputText()],      
+            [sg.Text('Replace all HR with "NaN" if they are >:', size=(30, 1)), sg.InputText()],      
+            [sg.Text('All rows will be deleted if the Cadence there is less than:', size=(30, 2)), sg.InputText()],      
             [sg.Submit(), sg.Cancel()]]      
         window = sg.Window('Data Cleaning', layout)  
         event, values = window.Read()   
@@ -51,7 +85,7 @@ def user_input(raw_folder, output_folder, manip, timeQ):
         ### Confirmation GUI still needed ###
             reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder, timeQ)
         else:
-            quit
+            raise SystemError(0)
     if manip == False:
         reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ)
 
@@ -62,14 +96,7 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
     
     # Progress bar window #
     i = 1
-    count = len([name for name in os.listdir(raw_folder) if os.path.isfile(os.path.join(raw_folder, name))])
-    layout = [[sg.Text('Press start to begin')],
-            [sg.ProgressBar(count, orientation='h', size=(20, 20), key='progbar')],
-            [sg.Output(size=(60,20))],
-            [sg.Button('Start'),
-            sg.Button('Quit')],
-            ]
-    window = sg.Window('Begin Restructuring and Cleaning', layout)
+    window = progressGUI(raw_folder)
     #--   --#
     while True:
         event,values = window.Read()
@@ -120,14 +147,7 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
     
     # Progress bar window #
     i = 1
-    count = len([name for name in os.listdir(raw_folder) if os.path.isfile(os.path.join(raw_folder, name))])
-    layout = [[sg.Text('Press start to restructure files...')],
-            [sg.ProgressBar(count, orientation='h', size=(20, 20), key='progbar')],
-            [sg.Output(size=(60,20))],
-            [sg.Button('Start'),
-            sg.Button('Quit')],
-            ]
-    window = sg.Window('Begin Restructuring', layout)
+    window = progressGUI(raw_folder)
     #--   --#
     while True:
         event,values = window.Read()
@@ -207,50 +227,57 @@ def finished(manip, output_folder, neg_pow_df, timeQ):
 def combine_excels(manip, output_folder):
     path = output_folder
     all_data = pd.DataFrame()
-    #--- Convert Dataframe to Excel ---#
-    if manip == True:
-        for f in glob.glob(os.path.join(path, '*_new.xlsx')):
-            df = pd.read_excel(f)
-            all_data = all_data.append(df, ignore_index=True)
-        all_manip = output_folder + '/' + '[combined_data_manip].xlsx'
-        writer = pd.ExcelWriter(all_manip)
-        # save without name of columns and the row-numbers
-        all_data.to_excel(writer, sheet_name='Sheet1', index=False)
-        writer.save()
-        ### Finished Notification GUI ###
-        layout = [[sg.Text('Finished! Your new file saved as [combined_data_manip].xlsx')],
-                    [sg.Radio('Quit', "RADIO1", default=False, size=(10,1)), sg.Radio('Start Over', "RADIO1")],
-                    [sg.Submit()]]      
-        window = sg.Window('Finished!', layout)
-        event, values = window.Read()    
-        window.Close()
-        
-        again = values[0]
-        if again == False:
-            start()
-        else:
-            quit
-    if manip == False:
-        for f in glob.glob(os.path.join(path, '*_new_raw.xlsx')):
-            df = pd.read_excel(f)
-            all_data = all_data.append(df, ignore_index=True)
-        all_manip = output_folder + '/' + '[combined_data_raw].xlsx'
-        writer = pd.ExcelWriter(all_manip)
-        # save without name of columns and the row-numbers
-        all_data.to_excel(writer, sheet_name='Sheet1', index=False)
-        writer.save()
-        ### Finished Notification GUI ###
-        layout = [[sg.Text('Finished! Your new file saved as [combined_data_raw].xlsx')],
-                    [sg.Radio('Quit', "RADIO1", default=False, size=(10,1)), sg.Radio('Start Over', "RADIO1")],
-                    [sg.Submit()]]      
-        window = sg.Window('Finished!', layout)
-        event, values = window.Read()
-        window.Close()
-        
-        again = values[0]
-        if again == False:
-            start()
-        else:
-            quit
+    #--- Convert Dataframe to Excel ---#   
+    while True:
+        if manip == True:
+            for f in glob.glob(os.path.join(path, '*_new.xlsx')):
+                try:
+                    df = pd.read_excel(f)
+                    all_data = all_data.append(df, ignore_index=True)
+                except:
+                    print('There is a problem with ',f)
+            all_manip = output_folder + '/' + '[combined_data_manip].xlsx'
+            writer = pd.ExcelWriter(all_manip)
+            # save without name of columns and the row-numbers
+            all_data.to_excel(writer, sheet_name='Sheet1', index=False)
+            writer.save()
+            ### Finished Notification GUI ###
+            layout = [[sg.Text('Finished! Your new file is saved as [combined_data_manip].xlsx')],
+                        [sg.Radio('Quit', "RADIO1", default=True, size=(10,1)), sg.Radio('Start Over', "RADIO1")],
+                        [sg.Submit()]]      
+            window = sg.Window('Finished!', layout)
+            event, values = window.Read()    
+            window.Close()
+            
+            again = values[0]
+            if again == False:
+                start()
+            else:
+                raise SystemError(0)
+        if manip == False:
+            for f in glob.glob(os.path.join(path, '*_new_raw.xlsx')):
+                try:
+                    df = pd.read_excel(f)
+                    all_data = all_data.append(df, ignore_index=True)
+                except:
+                    print('There is a problem with ',f)
+            all_manip = output_folder + '/' + '[combined_data_raw].xlsx'
+            writer = pd.ExcelWriter(all_manip)
+            # save without name of columns and the row-numbers
+            all_data.to_excel(writer, sheet_name='Sheet1', index=False)
+            writer.save()
+            ### Finished Notification GUI ###
+            layout = [[sg.Text('Finished! Your new file is saved as [combined_data_raw].xlsx')],
+                        [sg.Radio('Quit', "RADIO1", default=True, size=(10,1)), sg.Radio('Start Over', "RADIO1")],
+                        [sg.Submit()]]      
+            window = sg.Window('Finished!', layout)
+            event, values = window.Read()
+            window.Close()
+            
+            again = values[0]
+            if again == False:
+                start()
+            else:
+                raise SystemError(0)
 
 start()

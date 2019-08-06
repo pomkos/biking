@@ -114,7 +114,13 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
                     Torque = ext_dic['Torque']
                     #--   --#
                     subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
-                    subject_data = data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder)
+                    manip_dic = data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder)
+
+                    subject_data = manip_dic['subject_data']
+
+                    perc_nan = manip_dic['perc_nan']
+                    if perc_nan > 0:
+                        print(perc_nan,"% of HR values have been replaced with 'NaN' in ", csv_file)
                     save_excel(subject_data, csv_file, manip, output_folder)
                     if timeQ == True:
                         data = powerQ(subject_data)
@@ -127,10 +133,10 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
                     window.Element('progbar').UpdateBar(i)
                     #--    --#
                     print(csv_file + ".csv reorganized!")
-                except:
+                except Exception as e:
                     csv_file = os.path.splitext(os.path.basename(files))[0]
                     print('___________________________________')
-                    print('ERROR:')
+                    print('ERROR:', e)
                     print('There is a problem with ', csv_file, '.csv')
                     print('___________________________________')
                     print(' ')
@@ -176,12 +182,13 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
                     window.Element('progbar').UpdateBar(i)
                     #--   --#
                     print(csv_file + ".csv reorganized!")
-                except:
+                except Exception as e:
                     csv_file = os.path.splitext(os.path.basename(files))[0]
                     print('___________________________________')
-                    print('ERROR:')
+                    print('ERROR:', e)
                     print('There is a problem with ', csv_file, '.csv')
                     print('___________________________________')
+                    print(' ')
                     window.Element('progbar').UpdateBar(i)
 
             finished(manip, output_folder, neg_pow_df, timeQ)

@@ -56,9 +56,17 @@ def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, outp
     df['HR'] = df['HR'].mask(df['HR'] >= high_HR) 
     df['HR'] = df['HR'].mask(df['HR'] <= low_HR)
     ## --     -- ##
-    
+
+    nans_made = df['HR'].isna().sum()
+    total_rows = df.shape[0]
+    perc_nan = round((nans_made/total_rows) * 100, 2)
     subject_data = df
-    return subject_data
+
+    manip_dic = {
+        'subject_data' : df,
+        'perc_nan' : perc_nan
+        }
+    return manip_dic
 
 def save_excel(subject_data, csv_file, manip, output_folder):
     del subject_data['Time']

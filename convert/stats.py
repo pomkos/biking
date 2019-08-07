@@ -13,7 +13,7 @@ import PySimpleGUI as sg
 def df_avg(raw_folder, output_folder):
     file_list = glob.glob(os.path.join(raw_folder, "*_new.xlsx"))  # make a list of paths
     df = []
-    cols = ['ID', 'avg_HR', 'avg_Cad', 'avg_Pow', 'HR_NaN', 'Cad_NaN', 'Pow_NaN', 'Length']
+    cols = ['ID', 'avg_HR', 'std_HR', 'avg_Cad', 'std_Cad', 'avg_Pow', 'std_Pow', 'HR_NaN', 'Cad_NaN', 'Pow_NaN', 'Length']
     i = 1
     window = progressGUI(raw_folder)
     while True:
@@ -22,20 +22,24 @@ def df_avg(raw_folder, output_folder):
             try:
                 file = pd.read_excel(x)
                 file_id = file.loc[0,'ID']
-                hr_mean = round(np.mean(file['HR']),2)
-                cad_mean = round(np.mean(file['Cadence']),2)
-                pow_mean = round(np.mean(file['Power']),2)
+
+                means = round(np.mean(file),2) # Mean for each column
+                stds = round(np.std(file),2)   # Standard deviation for each column
                 file_length = file.shape[0]
-                is_nan = file.isna().sum()
-                print(file_id)
+                is_nan = file.isna().sum() # Number of NaN values for each column
+
+                print(file_id, ' analyzed')
                 df.append({'ID':file_id, 
-                            'avg_HR':hr_mean, 
-                            'avg_Cad':cad_mean, 
-                            'avg_Pow':pow_mean, 
+                            'avg_HR':means['HR'],
+                            'std_HR':stds['HR'],
+                            'avg_Cad':means['Cadence'],
+                            'std_Cad':stds['Cadence'], 
+                            'avg_Pow':means['Power'],
+                            'std_Pow':stds['Power'], 
                             'Length':file_length,
-                            'HR_NaN':is_nan['HR'],
-                            'Cad_NaN':is_nan['Cadence'],
-                            'Pow_NaN':is_nan['Power']
+                            'HR_NaN':is_nan['HR'] 
+                            #'Cad_NaN':is_nan['Cadence'],
+                            #'Pow_NaN':is_nan['Power']
                             })
 
                 #-- Updates the progress bar --#
@@ -46,23 +50,31 @@ def df_avg(raw_folder, output_folder):
                 #------------------------------#
             except Exception as e:
                 print(file_id, ': ',e)
+        
         df = pd.DataFrame(df,columns=cols)
+
+        #-- Add Mean and Std to end of each columns --#
+        df.loc['Mean'] = round(np.mean(df),2)
+        df.loc['Std'] = round(np.std(df),2)
+        df.loc['Mean','ID'] = 'Mean'
+        df.loc['Std','ID'] = 'Std'
+        #---------------------------------------------#
         avgs_save(df, output_folder, window)
         window.Close()
     print('Finished!')
 
 def avgs_save(df, output_folder, window):
-    print('Saving [averages].xlsx file')
+    print('Saving [basic_stats].xlsx file')
     event, values = window.Read(timeout=0)
-    save_file = output_folder + '\\' + '[averages].xlsx'
+    save_file = output_folder + '\\' + '[basic_stats].xlsx'
     writer = pd.ExcelWriter(save_file)
     df.to_excel(writer, sheet_name='Sheet1', index=False)
     writer.save()
-    print('[averages].xlsx saved')
+    print('[basic_stats].xlsx saved')
     finished()
 
 def finished():
-    layout = [[sg.Popup('Finished! The file has been saved [averages].xlsx')],
+    layout = [[sg.Popup('Finished! The file has been saved [basic_stats].xlsx')],
                 [sg.Button('OK')]]      
     window = sg.Window('Statistical Analysis Finished!', layout)    
     event, values = window.Read()   

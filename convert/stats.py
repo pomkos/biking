@@ -11,9 +11,9 @@ import PySimpleGUI as sg
 # Columns are made from the keys, data from the values of the dictionary
 
 def df_avg(raw_folder, output_folder):
-    file_list = glob.glob(os.path.join(raw_folder, "*_new_raw.xlsx"))  # make a list of paths
+    file_list = glob.glob(os.path.join(raw_folder, "*_new.xlsx"))  # make a list of paths
     df = []
-
+    cols = ['ID', 'avg_HR', 'avg_Cad', 'avg_Pow', 'HR_NaN', 'Cad_NaN', 'Pow_NaN', 'Length']
     i = 1
     window = progressGUI(raw_folder)
     while True:
@@ -25,8 +25,18 @@ def df_avg(raw_folder, output_folder):
                 hr_mean = round(np.mean(file['HR']),2)
                 cad_mean = round(np.mean(file['Cadence']),2)
                 pow_mean = round(np.mean(file['Power']),2)
+                file_length = file.shape[0]
+                is_nan = file.isna().sum()
                 print(file_id)
-                df.append({'ID':file_id, 'avg_HR':hr_mean, 'avg_Cad':cad_mean, 'avg_Pow':pow_mean})
+                df.append({'ID':file_id, 
+                            'avg_HR':hr_mean, 
+                            'avg_Cad':cad_mean, 
+                            'avg_Pow':pow_mean, 
+                            'Length':file_length,
+                            'HR_NaN':is_nan['HR'],
+                            'Cad_NaN':is_nan['Cadence'],
+                            'Pow_NaN':is_nan['Power']
+                            })
 
                 #-- Updates the progress bar --#
                 event, values = window.Read(timeout=0)
@@ -36,7 +46,7 @@ def df_avg(raw_folder, output_folder):
                 #------------------------------#
             except Exception as e:
                 print(file_id, ': ',e)
-        df = pd.DataFrame(df)
+        df = pd.DataFrame(df,columns=cols)
         avgs_save(df, output_folder, window)
         window.Close()
     print('Finished!')
@@ -56,7 +66,7 @@ def finished():
                 [sg.Button('OK')]]      
     window = sg.Window('Statistical Analysis Finished!', layout)    
     event, values = window.Read()   
-    
+
     if event == 'OK':
         raise SystemError(0)
     window.Close()

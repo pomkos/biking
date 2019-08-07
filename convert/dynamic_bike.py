@@ -54,11 +54,10 @@ def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, outp
 
     ## Replace with NaN ##
     if low_HR !=00:
-        df['HR'] = df[df['HR'] <= low_HR]
-
+        df['HR'][df['HR'] <= low_HR] = np.nan
     if high_HR !=00:
-        df['HR'] = df[df['HR'] >= high_HR]
-    ## --     -- ##
+        df['HR'][df['HR'] >= high_HR] = np.nan    
+    ## ---------------- ##
 
     nans_made = df['HR'].isna().sum()
     total_rows = df.shape[0]

@@ -1,4 +1,5 @@
 from dynamic_bike import extract_df, merge_df, data_manip, save_excel
+from stats import df_avg
 
 import pandas as pd
 from pandas import ExcelWriter
@@ -9,13 +10,14 @@ import PySimpleGUI as sg
 
 def start():
     event, values = sg.Window('Choice').Layout([[sg.Text('What would you like to do?')],
-                                                [sg.Radio('Reorganize Raw Files', 'RADIO1', default=True),
-                                                sg.Radio('Combine New Files', 'RADIO1')],
+                                                [sg.Radio('Reorganize Raw Files', 'RADIO1', default=True), #0
+                                                sg.Radio('Combine New Files', 'RADIO1'), #1
+                                                sg.Radio('Perform Basic Stats', 'RADIO1')],#2
                                                 [sg.CloseButton('Submit')]]).Read()
     window = sg.Window('Bike Data Tool')
     window.Close()
+    ## Define input and output folders
     if values[0] == True:
-        ## Define input and output folders
         event, values = sg.Window('Bike Data Tool').Layout([[sg.Text('Input folder')],
                                                             [sg.In(), sg.FolderBrowse()], #0
                                                             [sg.Text('Output folder')],
@@ -30,13 +32,31 @@ def start():
         window = sg.Window('Bike Data Tool')    
         window.Close()
         if event == 'Submit':
-            # raw_folder = values[0]
-            raw_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\input'
-            # output_folder=values[1]
-            output_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\output'
+            raw_folder = values[0]
+            # raw_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\input'
+            output_folder=values[1]
+            # output_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\output'
             manip = values[2]
             timeQ = values[4]
             user_input(raw_folder,output_folder,manip, timeQ)
+        else:
+            quit
+    elif values[2] == True:
+        event, values = sg.Window('Bike Data Analysis Tool').Layout([[sg.Text('Input folder')],
+                                                [sg.In(), sg.FolderBrowse()], #0
+                                                [sg.Text('Output folder')],
+                                                [sg.In(), sg.FolderBrowse()], #1
+                                                    [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
+        window = sg.Window('Bike Data Analysis Tool')    
+        window.Close()
+        if event == 'Submit':
+            raw_folder = values[0]
+            # raw_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\input'
+            output_folder=values[1]
+            # output_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\output'
+
+            # Progress bar window #
+            df_avg(raw_folder, output_folder)
         else:
             quit
     elif values[1] == True:
@@ -67,13 +87,15 @@ def progressGUI(raw_folder):
             ]
     window = sg.Window('Begin Restructuring and Cleaning', layout)
     return window
+
 def user_input(raw_folder, output_folder, manip, timeQ):     
     if manip == True:
     ### Info Gather GUI ###
         layout = [      
-            [sg.Text('Replace all HR with "NaN" if they are <:', size=(30, 1)), sg.InputText()],      
-            [sg.Text('Replace all HR with "NaN" if they are >:', size=(30, 1)), sg.InputText()],      
-            [sg.Text('All rows will be deleted if the Cadence there is less than:', size=(30, 2)), sg.InputText()],      
+            [sg.Text('Replace all HR with "NaN" if they are <:', size=(30, 1),tooltip='Choosing 00 will disable this function'), sg.InputText()],      
+            [sg.Text('Replace all HR with "NaN" if they are >:', size=(30, 1),tooltip='Choosing 00 will disable this function'), sg.InputText()],      
+            [sg.Text('All rows will be deleted if the Cadence there is less than:', size=(30, 2), tooltip='Choosing 00 will disable this function'), sg.InputText()],
+            [sg.Text('(Choosing 00 as the value will disable that option)',justification='center')],
             [sg.Submit(), sg.Cancel()]]      
         window = sg.Window('Data Cleaning', layout)  
         event, values = window.Read()   

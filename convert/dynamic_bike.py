@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from pandas import ExcelWriter
-
 #--- Manipulate an Excel File ---#
 
 def extract_df(csv_file, raw_folder):
@@ -50,11 +49,15 @@ def merge_df(HR, Cadence, Power, Torque, csv_file):
 
 def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, output_folder):
     df = subject_data
-    df = df.drop(df[(df.Cadence <= low_Cadence)].index).reset_index(drop=True)
+    if low_Cadence != 00:
+        df = df.drop(df[(df.Cadence <= low_Cadence)].index).reset_index(drop=True)
 
     ## Replace with NaN ##
-    df['HR'] = df['HR'].mask(df['HR'] >= high_HR) 
-    df['HR'] = df['HR'].mask(df['HR'] <= low_HR)
+    if low_HR !=00:
+        df['HR'] = df[df['HR'] <= low_HR]
+
+    if high_HR !=00:
+        df['HR'] = df[df['HR'] >= high_HR]
     ## --     -- ##
 
     nans_made = df['HR'].isna().sum()
@@ -74,7 +77,6 @@ def save_excel(subject_data, csv_file, manip, output_folder):
     del subject_data['Status']
     del subject_data['Marker']
     subject_data['ID'] = csv_file
-
     if manip == True:
         csv_file = output_folder + '\\' + csv_file + '_new.xlsx'
         #--- Convert Dataframe to Excel ---#
@@ -89,3 +91,4 @@ def save_excel(subject_data, csv_file, manip, output_folder):
         # , header=False) #save without name of columns and the row-numbers
         subject_data.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()
+    

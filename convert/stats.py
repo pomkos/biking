@@ -11,7 +11,7 @@ import PySimpleGUI as sg
 # Columns are made from the keys, data from the values of the dictionary
 
 def df_avg(raw_folder, output_folder):
-    file_list = glob.glob(os.path.join(raw_folder, "*_new.xlsx"))  # make a list of paths
+    file_list = glob.glob(os.path.join(raw_folder, "*_new_raw.xlsx"))  # make a list of paths
     df = []
 
     i = 1
@@ -28,16 +28,18 @@ def df_avg(raw_folder, output_folder):
                 print(file_id)
                 df.append({'ID':file_id, 'avg_HR':hr_mean, 'avg_Cad':cad_mean, 'avg_Pow':pow_mean})
 
-                # Updates the progress bar #
+                #-- Updates the progress bar --#
                 event, values = window.Read(timeout=0)
                 if event == 'Cancel' or event is None:
                     break
                 window.Element('progbar').UpdateBar(i)
-                #--    --#
+                #------------------------------#
             except Exception as e:
                 print(file_id, ': ',e)
         df = pd.DataFrame(df)
         avgs_save(df, output_folder, window)
+        window.Close()
+    print('Finished!')
 
 def avgs_save(df, output_folder, window):
     print('Saving [averages].xlsx file')
@@ -47,6 +49,17 @@ def avgs_save(df, output_folder, window):
     df.to_excel(writer, sheet_name='Sheet1', index=False)
     writer.save()
     print('[averages].xlsx saved')
+    finished()
+
+def finished():
+    layout = [[sg.Popup('Finished! The file has been saved [averages].xlsx')],
+                [sg.Button('OK')]]      
+    window = sg.Window('Statistical Analysis Finished!', layout)    
+    event, values = window.Read()   
+    
+    if event == 'OK':
+        raise SystemError(0)
+    window.Close()
 
 def progressGUI(raw_folder):
     count = len([name for name in os.listdir(raw_folder) if os.path.isfile(os.path.join(raw_folder, name))])

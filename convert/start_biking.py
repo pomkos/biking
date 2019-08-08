@@ -40,10 +40,8 @@ def start():
     elif values[2] == True:
         event, values = sg.Window('Bike Data Analysis Tool').Layout([[sg.Text('Input folder')],
                                                 [sg.In(), sg.FolderBrowse()], #0
-                                                [sg.Text('Output folder')],
-                                                [sg.In(), sg.FolderBrowse()], #1
                                                 [sg.Text('The files end in: ')],
-                                                [sg.Radio('_new.xlsx', 'RADIO1'), #2
+                                                [sg.Radio('_new.xlsx', 'RADIO1', default=True), #1
                                                 sg.Radio('_new_raw.xlsx', 'RADIO1')],
                                                 [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
         window = sg.Window('Bike Data Analysis Tool')    
@@ -51,12 +49,10 @@ def start():
         if event == 'Submit':
             raw_folder = values[0]
             # raw_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\input'
-            output_folder=values[1]
-            # output_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\output'
 
             # Progress bar window #
-            manip = values[2]
-            df_avg(raw_folder, output_folder, manip)
+            manip = values[1]
+            df_avg(raw_folder, manip)
         else:
             quit
     elif values[1] == True:

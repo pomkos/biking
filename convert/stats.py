@@ -10,7 +10,7 @@ import PySimpleGUI as sg
 # Logic: create a dictionary of averages from file, then append that dictionary to df2. Do this for all files
 # Columns are made from the keys, data from the values of the dictionary
 
-def df_avg(raw_folder, output_folder, manip):
+def df_avg(raw_folder, manip):
     if manip == True:
         file_list = glob.glob(os.path.join(raw_folder, "*_new.xlsx"))  # make a list of paths
     elif manip == False:
@@ -65,7 +65,7 @@ def df_avg(raw_folder, output_folder, manip):
         df.loc['Mean','ID'] = 'Mean'
         df.loc['Std','ID'] = 'Std'
         #---------------------------------------------#
-        avgs_save(df, output_folder, window,manip)
+        avgs_save(df, raw_folder, window,manip)
         window.Close()
     print('Finished!')
 
@@ -74,24 +74,33 @@ def neg_Pow_count(file):
     time = file[file.Power < 0].shape[0] # time on bike where Power is less than 0
     return time
 
-def avgs_save(df, output_folder, window,manip):
-    print('Saving [basic_stats].xlsx file')
-    event, values = window.Read(timeout=0)
-    save_file = output_folder + '\\' + '[basic_stats].xlsx'
-    writer = pd.ExcelWriter(save_file)
-    df.to_excel(writer, sheet_name='Sheet1', index=False)
-    writer.save()
-    print('[basic_stats].xlsx saved')
+def avgs_save(df, raw_folder, window,manip):
+    if manip == True:
+        print('Saving [basic_stats].xlsx file')
+        event, values = window.Read(timeout=0)
+        save_file = raw_folder + '\\' + '[basic_stats].xlsx'
+        writer = pd.ExcelWriter(save_file)
+        df.to_excel(writer, sheet_name='Sheet1', index=False)
+        writer.save()
+        print('[basic_stats].xlsx saved')
+    elif manip == False:
+        print('Saving [basic_stats_raw].xlsx file')
+        event, values = window.Read(timeout=0)
+        save_file = raw_folder + '\\' + '[basic_stats_raw].xlsx'
+        writer = pd.ExcelWriter(save_file)
+        df.to_excel(writer, sheet_name='Sheet1', index=False)
+        writer.save()
+        print('[basic_stats_raw].xlsx saved')
     finished(manip)
 
 def finished(manip):
     if manip == True:
-        layout = [[sg.Popup('Finished! The file has been saved [basic_stats].xlsx')],
+        layout = [[sg.Popup('Finished! The file has been saved as [basic_stats].xlsx')],
                     [sg.Button('OK')]]      
         window = sg.Window('Statistical Analysis Finished!', layout)    
         event, values = window.Read()   
     elif manip == False:
-        layout = [[sg.Popup('Finished! The file has been saved [basic_stats_raw].xlsx')],
+        layout = [[sg.Popup('Finished! The file has been saved as [basic_stats_raw].xlsx')],
         [sg.Button('OK')]]      
         window = sg.Window('Statistical Analysis Finished!', layout)    
         event, values = window.Read()  

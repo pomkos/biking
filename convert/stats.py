@@ -10,10 +10,13 @@ import PySimpleGUI as sg
 # Logic: create a dictionary of averages from file, then append that dictionary to df2. Do this for all files
 # Columns are made from the keys, data from the values of the dictionary
 
-def df_avg(raw_folder, output_folder):
-    file_list = glob.glob(os.path.join(raw_folder, "*_new.xlsx"))  # make a list of paths
+def df_avg(raw_folder, output_folder, manip):
+    if manip == True:
+        file_list = glob.glob(os.path.join(raw_folder, "*_new.xlsx"))  # make a list of paths
+    elif manip == False:
+        file_list = glob.glob(os.path.join(raw_folder, "*_new_raw.xlsx"))
     df = []
-    cols = ['ID', 'avg_HR', 'std_HR', 'avg_Cad', 'std_Cad', 'avg_Pow', 'std_Pow', 'HR_NaN', 'Cad_NaN', 'Pow_NaN', 'Length']
+    cols = ['ID', 'avg_HR', 'std_HR', 'avg_Cad', 'std_Cad', 'avg_Pow', 'std_Pow', 'neg_Pow', 'HR_NaN', 'Length']
     i = 1
     window = progressGUI(raw_folder)
     while True:
@@ -27,6 +30,8 @@ def df_avg(raw_folder, output_folder):
                 stds = round(np.std(file),2)   # Standard deviation for each column
                 file_length = file.shape[0]
                 is_nan = file.isna().sum() # Number of NaN values for each column
+                
+                seconds = neg_Pow_count(file)
 
                 print(file_id, ' analyzed')
                 df.append({'ID':file_id, 
@@ -35,7 +40,8 @@ def df_avg(raw_folder, output_folder):
                             'avg_Cad':means['Cadence'],
                             'std_Cad':stds['Cadence'], 
                             'avg_Pow':means['Power'],
-                            'std_Pow':stds['Power'], 
+                            'std_Pow':stds['Power'],
+                            'neg_Pow':seconds, 
                             'Length':file_length,
                             'HR_NaN':is_nan['HR'] 
                             #'Cad_NaN':is_nan['Cadence'],
@@ -59,11 +65,16 @@ def df_avg(raw_folder, output_folder):
         df.loc['Mean','ID'] = 'Mean'
         df.loc['Std','ID'] = 'Std'
         #---------------------------------------------#
-        avgs_save(df, output_folder, window)
+        avgs_save(df, output_folder, window,manip)
         window.Close()
     print('Finished!')
 
-def avgs_save(df, output_folder, window):
+
+def neg_Pow_count(file):
+    time = file[file.Power < 0].shape[0] # time on bike where Power is less than 0
+    return time
+
+def avgs_save(df, output_folder, window,manip):
     print('Saving [basic_stats].xlsx file')
     event, values = window.Read(timeout=0)
     save_file = output_folder + '\\' + '[basic_stats].xlsx'
@@ -71,14 +82,19 @@ def avgs_save(df, output_folder, window):
     df.to_excel(writer, sheet_name='Sheet1', index=False)
     writer.save()
     print('[basic_stats].xlsx saved')
-    finished()
+    finished(manip)
 
-def finished():
-    layout = [[sg.Popup('Finished! The file has been saved [basic_stats].xlsx')],
-                [sg.Button('OK')]]      
-    window = sg.Window('Statistical Analysis Finished!', layout)    
-    event, values = window.Read()   
-
+def finished(manip):
+    if manip == True:
+        layout = [[sg.Popup('Finished! The file has been saved [basic_stats].xlsx')],
+                    [sg.Button('OK')]]      
+        window = sg.Window('Statistical Analysis Finished!', layout)    
+        event, values = window.Read()   
+    elif manip == False:
+        layout = [[sg.Popup('Finished! The file has been saved [basic_stats_raw].xlsx')],
+        [sg.Button('OK')]]      
+        window = sg.Window('Statistical Analysis Finished!', layout)    
+        event, values = window.Read()  
     if event == 'OK':
         raise SystemError(0)
     window.Close()

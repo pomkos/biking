@@ -6,13 +6,13 @@ from pandas import ExcelWriter
 import glob
 import os
 import sys
-import PySimpleGUI as sg      
+import PySimpleGUI as sg
 
 def start():
     event, values = sg.Window('Choice').Layout([[sg.Text('What would you like to do?')],
-                                                [sg.Radio('Reorganize Raw Files', 'RADIO1', default=True), #0
-                                                sg.Radio('Combine New Files', 'RADIO1'), #1
-                                                sg.Radio('Perform Basic Stats', 'RADIO1')],#2
+                                                [sg.Radio('Reorganize Raw Files', 'RADIO1', default=True)], #0
+                                                [sg.Radio('Combine New Files', 'RADIO1')], #1
+                                                [sg.Radio('Perform Basic Stats', 'RADIO1')],#2
                                                 [sg.CloseButton('Submit')]]).Read()
     window = sg.Window('Bike Data Tool')
     window.Close()
@@ -25,9 +25,6 @@ def start():
                                                             [sg.Text('Would you like to clean your data?')],      
                                                             [sg.Radio('Yes', "RADIO1", default=True), #2
                                                             sg.Radio('No', "RADIO1")],#3
-                                                            [sg.Text('Would you like to count the number of lines with Power < 0?')],
-                                                            [sg.Radio('Yes', "RADIO2", default=True), #4
-                                                            sg.Radio('No', "RADIO2")],#5
                                                             [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
         window = sg.Window('Bike Data Tool')    
         window.Close()
@@ -37,8 +34,7 @@ def start():
             output_folder=values[1]
             # output_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\output'
             manip = values[2]
-            timeQ = values[4]
-            user_input(raw_folder,output_folder,manip, timeQ)
+            user_input(raw_folder,output_folder,manip)
         else:
             quit
     elif values[2] == True:
@@ -46,7 +42,10 @@ def start():
                                                 [sg.In(), sg.FolderBrowse()], #0
                                                 [sg.Text('Output folder')],
                                                 [sg.In(), sg.FolderBrowse()], #1
-                                                    [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
+                                                [sg.Text('The files end in: ')],
+                                                [sg.Radio('_new.xlsx', 'RADIO1'), #2
+                                                sg.Radio('_new_raw.xlsx', 'RADIO1')],
+                                                [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
         window = sg.Window('Bike Data Analysis Tool')    
         window.Close()
         if event == 'Submit':
@@ -56,7 +55,8 @@ def start():
             # output_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\output'
 
             # Progress bar window #
-            df_avg(raw_folder, output_folder)
+            manip = values[2]
+            df_avg(raw_folder, output_folder, manip)
         else:
             quit
     elif values[1] == True:
@@ -88,7 +88,7 @@ def progressGUI(raw_folder):
     window = sg.Window('Begin Restructuring and Cleaning', layout)
     return window
 
-def user_input(raw_folder, output_folder, manip, timeQ):     
+def user_input(raw_folder, output_folder, manip):     
     if manip == True:
     ### Info Gather GUI ###
         layout = [      
@@ -105,13 +105,13 @@ def user_input(raw_folder, output_folder, manip, timeQ):
             high_HR = int(values[1])
             low_Cadence = int(values[2])
         ### Confirmation GUI still needed ###
-            reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder, timeQ)
+            reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder)
         else:
             raise SystemError(0)
     if manip == False:
-        reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ)
+        reorg_excels_no_manip(manip, raw_folder, output_folder)
 
-def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder, timeQ):
+def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, output_folder):
     neg_pow_df = pd.DataFrame()
     path = raw_folder  # where the raw csv files are located
     all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
@@ -144,9 +144,6 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
                     if perc_nan > 0:
                         print(perc_nan,"% of HR values have been replaced with 'NaN' in ", csv_file)
                     save_excel(subject_data, csv_file, manip, output_folder)
-                    if timeQ == True:
-                        data = powerQ(subject_data)
-                        neg_pow_df = neg_pow_df.append(data)
 
                     # Updates the progress bar #
                     event, values = window.Read(timeout=0)
@@ -157,18 +154,14 @@ def reorg_excels_and_manip(low_HR, high_HR, low_Cadence, manip, raw_folder, outp
                     print(csv_file + ".csv reorganized!")
                 except Exception as e:
                     csv_file = os.path.splitext(os.path.basename(files))[0]
-                    print('___________________________________')
-                    print('ERROR:', e)
-                    print('There is a problem with ', csv_file, '.csv')
-                    print('___________________________________')
-                    print(' ')
+                    print('ERROR WITH ',csv_file, '.csv: ', e)
                     window.Element('progbar').UpdateBar(i)
         
-            finished(manip, output_folder, neg_pow_df, timeQ)
+            finished(manip, output_folder, neg_pow_df)
         elif event == 'Quit':
             raise SystemError(0)
 
-def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
+def reorg_excels_no_manip(manip, raw_folder, output_folder):
     neg_pow_df = pd.DataFrame()
     path = raw_folder  # where the raw csv files are located
     all_files = glob.glob(os.path.join(path, "*.csv"))  # make a list of paths
@@ -193,10 +186,7 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
                     #--   --#
                     subject_data = merge_df(HR, Cadence, Power, Torque, csv_file)
                     save_excel(subject_data, csv_file, manip, output_folder)
-                    if timeQ == True:
-                        data = powerQ(subject_data)
-                        neg_pow_df = neg_pow_df.append(data)
-                    
+
                     # Update the progress bar #
                     event, values = window.Read(timeout=0)
                     if event == 'Cancel' or event is None:
@@ -206,35 +196,14 @@ def reorg_excels_no_manip(manip, raw_folder, output_folder, timeQ):
                     print(csv_file + ".csv reorganized!")
                 except Exception as e:
                     csv_file = os.path.splitext(os.path.basename(files))[0]
-                    print('___________________________________')
-                    print('ERROR:', e)
-                    print('There is a problem with ', csv_file, '.csv')
-                    print('___________________________________')
-                    print(' ')
+                    print('ERROR WITH ', csv_file, '.csv: ', e)
                     window.Element('progbar').UpdateBar(i)
 
-            finished(manip, output_folder, neg_pow_df, timeQ)
+            finished(manip, output_folder, neg_pow_df)
         elif event == 'Quit':
             raise SystemError(0)
-
-def powerQ(subject_data):
-    time = subject_data[subject_data.Power < 0].shape[0] # time on bike where Power is less than 0
-    data = [(subject_data['ID'][1],time)]
-    return data
-
-def powerQ_save(neg_pow_df, output_folder, manip):
-    if manip == True:
-        neg_pow_loc = output_folder + '/' + '[neg_power_manip].xlsx'
-    if manip == False:
-        neg_pow_loc = output_folder + '/' + '[neg_power_raw].xlsx'
-    writer = pd.ExcelWriter(neg_pow_loc)
-    neg_pow_df.columns = ['ID', 'Seconds of NegPow']
-    neg_pow_df.to_excel(writer, sheet_name='Sheet1', index=False)
-    writer.save()
-    
-def finished(manip, output_folder, neg_pow_df, timeQ):
-    if timeQ == True:
-        powerQ_save(neg_pow_df, output_folder, manip)
+   
+def finished(manip, output_folder, neg_pow_df):
     #### Finished Window with Options ###
     layout = [[sg.Text('Finished! What would you like to do next?')],
                 [sg.Radio('Quit', "RADIO1", default=True),

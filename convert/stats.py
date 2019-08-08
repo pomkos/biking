@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import glob
 import os
+import nolds #sampen calc
 
 from pandas import ExcelWriter
 import PySimpleGUI as sg      
@@ -16,7 +17,7 @@ def df_avg(raw_folder, manip):
     elif manip == False:
         file_list = glob.glob(os.path.join(raw_folder, "*_new_raw.xlsx"))
     df = []
-    cols = ['ID', 'avg_HR', 'std_HR', 'avg_Cad', 'std_Cad', 'avg_Pow', 'std_Pow', 'neg_Pow', 'HR_NaN', 'Length']
+    cols = ['ID', 'avg_HR', 'std_HR', 'SamEn_HR','avg_Cad', 'std_Cad', 'SamEn_Cad','avg_Pow', 'std_Pow', 'SamEn_Pow','neg_Pow', 'HR_NaN', 'Length']
     i = 1
     window = progressGUI(raw_folder)
     while True:
@@ -33,14 +34,20 @@ def df_avg(raw_folder, manip):
                 
                 seconds = neg_Pow_count(file)
 
-                print(file_id, ' analyzed')
+                sampEn_HR = round(nolds.sampen(file['HR']),2)
+                sampEn_Cad = round(nolds.sampen(file['Cadence']),2)
+                sampEn_Pow = round(nolds.sampen(file['Power']),2)
+
                 df.append({'ID':file_id, 
                             'avg_HR':means['HR'],
                             'std_HR':stds['HR'],
+                            'Sam_HR':sampEn_HR,
                             'avg_Cad':means['Cadence'],
-                            'std_Cad':stds['Cadence'], 
+                            'std_Cad':stds['Cadence'],
+                            'Sam_Cad':sampEn_Cad, 
                             'avg_Pow':means['Power'],
                             'std_Pow':stds['Power'],
+                            'Sam_Pow':sampEn_Pow,
                             'neg_Pow':seconds, 
                             'Length':file_length,
                             'HR_NaN':is_nan['HR'] 
@@ -50,9 +57,11 @@ def df_avg(raw_folder, manip):
 
                 #-- Updates the progress bar --#
                 event, values = window.Read(timeout=0)
+                print(file_id, ' analyzed')
                 if event == 'Cancel' or event is None:
                     break
                 window.Element('progbar').UpdateBar(i)
+                
                 #------------------------------#
             except Exception as e:
                 print(file_id, ': ',e)

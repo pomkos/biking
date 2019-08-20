@@ -11,15 +11,15 @@ import PySimpleGUI as sg
 # Logic: create a dictionary of averages from file, then append that dictionary to df2. Do this for all files
 # Columns are made from the keys, data from the values of the dictionary
 
-def df_avg(raw_folder, manip):
+def df_avg(output_folder, manip, ent_yes):
     if manip == True:
-        file_list = glob.glob(os.path.join(raw_folder, "*_new.xlsx"))  # make a list of paths
+        file_list = glob.glob(os.path.join(output_folder, "*_new.xlsx"))  # make a list of paths
     elif manip == False:
-        file_list = glob.glob(os.path.join(raw_folder, "*_new_raw.xlsx"))
+        file_list = glob.glob(os.path.join(output_folder, "*_new_raw.xlsx"))
     df = []
     cols = ['ID', 'avg_HR', 'std_HR', 'SamEn_HR','avg_Cad', 'std_Cad', 'SamEn_Cad','avg_Pow', 'std_Pow', 'SamEn_Pow','neg_Pow', 'HR_NaN', 'Length']
     i = 1
-    window = progressGUI(raw_folder)
+    window = progressGUI(output_folder)
     while True:
         for x in file_list:
             i = i+1
@@ -74,20 +74,45 @@ def df_avg(raw_folder, manip):
         df.loc['Mean','ID'] = 'Mean'
         df.loc['Std','ID'] = 'Std'
         #---------------------------------------------#
-        avgs_save(df, raw_folder, window,manip)
+        avgs_save(df, output_folder, window,manip)
         window.Close()
+    if ent_yes == True:
+        layout = [[sg.Text('What was the resistance setting?')],
+                [sg.Input()], # 0
+                [sg.Text('What was the cadence setting?')],
+                [sg.Input()], # 1
+                [sg.Output(size=(60,20))],
+                [sg.Button('Submit')]
+                ]    
+        window = sg.Window('Entropy Analysis Options!', layout)    
+        event, values = window.Read()  
+
+        res = values[0]
+        cad = values[1]
+
+        entropy_matlab(res,cad,output_folder)
     print('Finished!')
 
+def entropy_matlab(res, cad, root, output_folder):
+    import matlab.engine as mat
+
+    res = res # resistance setting used
+    cad = cad # cadence setting used
+    root = os.path.dirname(os.path.realpath(__file__)) # directory of matlab files
+
+    eng = mat.start_matlab() # starts the matlab engine
+    answer = eng.apsamen_cleaned(res, cad, root, output_folder, nargout=0) # calls the apsamen_cleaned.m file's function
+    print(answer) # prints everything out, because of nargout=0 argument
 
 def neg_Pow_count(file):
     time = file[file.Power < 0].shape[0] # time on bike where Power is less than 0
     return time
 
-def avgs_save(df, raw_folder, window,manip):
+def avgs_save(df, output_folder, window,manip):
     if manip == True:
         print('Saving [basic_stats].xlsx file')
         event, values = window.Read(timeout=0)
-        save_file = raw_folder + '\\' + '[basic_stats].xlsx'
+        save_file = output_folder + '\\' + '[basic_stats].xlsx'
         writer = pd.ExcelWriter(save_file)
         df.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()
@@ -95,7 +120,7 @@ def avgs_save(df, raw_folder, window,manip):
     elif manip == False:
         print('Saving [basic_stats_raw].xlsx file')
         event, values = window.Read(timeout=0)
-        save_file = raw_folder + '\\' + '[basic_stats_raw].xlsx'
+        save_file = output_folder + '\\' + '[basic_stats_raw].xlsx'
         writer = pd.ExcelWriter(save_file)
         df.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()
@@ -117,8 +142,8 @@ def finished(manip):
         raise SystemError(0)
     window.Close()
 
-def progressGUI(raw_folder):
-    count = len([name for name in os.listdir(raw_folder) if os.path.isfile(os.path.join(raw_folder, name))])
+def progressGUI(output_folder):
+    count = len([name for name in os.listdir(output_folder) if os.path.isfile(os.path.join(output_folder, name))])
     layout = [[sg.Text('Press start to begin')],
             [sg.ProgressBar(count, orientation='h', size=(20, 20), key='progbar')],
             [sg.Output(size=(60,20))],

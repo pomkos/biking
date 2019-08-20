@@ -43,16 +43,19 @@ def start():
                                                 [sg.Text('The files end in: ')],
                                                 [sg.Radio('_new.xlsx', 'RADIO1', default=True), #1
                                                 sg.Radio('_new_raw.xlsx', 'RADIO1')],
+                                                [sg.Radio('Yes','RADIO2',default=True), #2
+                                                sg.Radio('No','RADDIO2')], #3
                                                 [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
         window = sg.Window('Bike Data Analysis Tool')    
         window.Close()
         if event == 'Submit':
-            raw_folder = values[0]
+            output_folder = values[0]
             # raw_folder = 'C:\\Users\\albei\\OneDrive\\Desktop\\analyze\\input'
 
             # Progress bar window #
             manip = values[1]
-            df_avg(raw_folder, manip)
+            ent_yes = values[2]
+            df_avg(output_folder, manip, ent_yes)
         else:
             quit
     elif values[1] == True:

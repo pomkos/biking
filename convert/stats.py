@@ -74,26 +74,11 @@ def df_avg(output_folder, manip, ent_yes):
         df.loc['Mean','ID'] = 'Mean'
         df.loc['Std','ID'] = 'Std'
         #---------------------------------------------#
-        avgs_save(df, output_folder, window,manip)
+        avgs_save(df, output_folder, window,manip, ent_yes)
         window.Close()
-    if ent_yes == True:
-        layout = [[sg.Text('What was the resistance setting?')],
-                [sg.Input()], # 0
-                [sg.Text('What was the cadence setting?')],
-                [sg.Input()], # 1
-                [sg.Output(size=(60,20))],
-                [sg.Button('Submit')]
-                ]    
-        window = sg.Window('Entropy Analysis Options!', layout)    
-        event, values = window.Read()  
-
-        res = values[0]
-        cad = values[1]
-
-        entropy_matlab(res,cad,output_folder)
     print('Finished!')
 
-def entropy_matlab(res, cad, root, output_folder):
+def entropy_matlab(res, cad, output_folder):
     import matlab.engine as mat
 
     res = res # resistance setting used
@@ -108,7 +93,7 @@ def neg_Pow_count(file):
     time = file[file.Power < 0].shape[0] # time on bike where Power is less than 0
     return time
 
-def avgs_save(df, output_folder, window,manip):
+def avgs_save(df, output_folder, window,manip, ent_yes):
     if manip == True:
         print('Saving [basic_stats].xlsx file')
         event, values = window.Read(timeout=0)
@@ -125,7 +110,25 @@ def avgs_save(df, output_folder, window,manip):
         df.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()
         print('[basic_stats_raw].xlsx saved')
-    finished(manip)
+
+    if ent_yes == True:
+        layout = [[sg.Text('What was the resistance setting?')],
+            [sg.Input()], # 0
+            [sg.Text('What was the cadence setting?')],
+            [sg.Input()], # 1
+            [sg.Output(size=(60,20))],
+            [sg.Button('Submit')]
+            ]    
+        window = sg.Window('Entropy Analysis Options!', layout)    
+        event, values = window.Read()  
+
+        res = values[0]
+        cad = values[1]
+
+        entropy_matlab(res,cad,output_folder)
+
+    elif ent_yes == False:
+        finished(manip)
 
 def finished(manip):
     if manip == True:
@@ -139,7 +142,7 @@ def finished(manip):
         window = sg.Window('Statistical Analysis Finished!', layout)    
         event, values = window.Read()  
     if event == 'OK':
-        raise SystemError(0)
+        return
     window.Close()
 
 def progressGUI(output_folder):

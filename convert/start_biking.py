@@ -44,9 +44,10 @@ def start():
                                                 [sg.In(), sg.FolderBrowse()], #0
                                                 [sg.Text('The files end in: ')],
                                                 [sg.Radio('_new.xlsx', 'RADIO1', default=True), #1
-                                                sg.Radio('_new_raw.xlsx', 'RADIO1')],
-                                                [sg.Radio('Yes','RADIO2',default=True), #2
-                                                sg.Radio('No','RADDIO2')], #3
+                                                sg.Radio('_new_raw.xlsx', 'RADIO1')], #2
+                                                [sg.Text('Get the entropy values?')],
+                                                [sg.Radio('Yes','RADIO2',default=True), #3
+                                                sg.Radio('No','RADDIO2')], #4
                                                 [sg.CloseButton('Submit'), sg.CloseButton('Cancel')]]).Read()
         window = sg.Window('Bike Data Analysis Tool')    
         window.Close()
@@ -56,7 +57,7 @@ def start():
 
             # Progress bar window #
             manip = values[1]
-            ent_yes = values[2]
+            ent_yes = values[3]
             df_avg(output_folder, manip, ent_yes)
         else:
             quit

@@ -1,4 +1,4 @@
-Combine different excel files, reformat it, and clean data appropriately for eventual usage in SPSS/R.
+Combine different excel files, reformat it, and clean data appropriately for eventual usage in SPSS/R!
 
 # Features:
 

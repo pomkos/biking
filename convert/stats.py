@@ -86,7 +86,7 @@ def entropy_matlab(res, cad, output_folder):
     root = os.path.dirname(os.path.realpath(__file__)) # directory of matlab files
 
     eng = mat.start_matlab() # starts the matlab engine
-    answer = eng.apsamen_cleaned(res, cad, root, output_folder, nargout=0) # calls the apsamen_cleaned.m file's function
+    answer = eng.apsamen_cleaned(res, cad, root, output_folder, nargout=1) # calls the apsamen_cleaned.m file's function
     print(answer) # prints everything out, because of nargout=0 argument
 
 def neg_Pow_count(file):
@@ -116,7 +116,7 @@ def avgs_save(df, output_folder, window,manip, ent_yes):
             [sg.Input()], # 0
             [sg.Text('What was the cadence setting?')],
             [sg.Input()], # 1
-            [sg.Output(size=(60,20))],
+          ################  [sg.Output(size=(60,20))],
             [sg.Button('Submit')]
             ]    
         window = sg.Window('Entropy Analysis Options!', layout)    
@@ -149,7 +149,7 @@ def progressGUI(output_folder):
     count = len([name for name in os.listdir(output_folder) if os.path.isfile(os.path.join(output_folder, name))])
     layout = [[sg.Text('Press start to begin')],
             [sg.ProgressBar(count, orientation='h', size=(20, 20), key='progbar')],
-            [sg.Output(size=(60,20))],
+         #############   [sg.Output(size=(60,20))],
             [sg.Button('Start'),
             sg.Button('Quit')],
             ]

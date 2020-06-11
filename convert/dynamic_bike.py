@@ -7,18 +7,17 @@ def extract_df(csv_file, raw_folder):
     csv_file2 = raw_folder + '/' + csv_file + '.csv'
     # import csv page. Sheetname refers to sheet in file
     sheet = pd.read_csv(csv_file2, delimiter=',')
-    tag = sheet.set_index(['Tag'])  # set Tag column as the default index
-
+    sheet.columns = ['Date', 'Time', 'Millitm', 'Marker', 'Tag', 'Status', 'Value'] # remove ; from ;Date
+    tag = sheet.set_index(['Tag'])  # set Tag column as the default index    
     # NOTE: use isin to iterate: tag.loc['item one','item two']
-    HR = tag.loc['{[CompactLogix]Heart_Rate}'].set_index(';Date')
+    HR = tag.loc['{[CompactLogix]Heart_Rate}'].reset_index(drop=True) # select all rows that have this tag
     HR.rename(columns={'Value': 'HR'}, inplace=True)
-    Cadence = tag.loc['{[CompactLogix]Rider_Cadence}'].set_index(';Date')
+    Cadence = tag.loc['{[CompactLogix]Rider_Cadence}'].reset_index(drop=True)
     Cadence.rename(columns={'Value': 'Cadence'}, inplace=True)
-    Power = tag.loc['{[CompactLogix]Actual_Power}'].set_index(
-        ';Date')  # select all rows that have this tag
+    Power = tag.loc['{[CompactLogix]Actual_Power}'].reset_index(drop=True)
     # rename Value column to Power
     Power.rename(columns={'Value': 'Power'}, inplace=True)
-    Torque = tag.loc['{[CompactLogix]Actual_Torque}'].set_index(';Date')
+    Torque = tag.loc['{[CompactLogix]Actual_Torque}'].reset_index(drop=True)
     Torque.rename(columns={'Value': 'Torque'}, inplace=True)
     ext_dic = {
         'HR': HR,
@@ -27,7 +26,6 @@ def extract_df(csv_file, raw_folder):
         'Torque': Torque
     }
     return ext_dic
-
 
 def merge_df(HR, Cadence, Power, Torque, csv_file):
     #--- Merge Dataframes ---#
@@ -71,12 +69,12 @@ def data_manip(subject_data, csv_file, low_HR, high_HR, low_Cadence, manip, outp
     return manip_dic
 
 def save_excel(subject_data, csv_file, manip, output_folder):
-    del subject_data['Time']
-    del subject_data['Millitm']
-    del subject_data['Status']
-    del subject_data['Marker']
     subject_data['ID'] = csv_file
     if manip == True:
+        del subject_data['Time']
+        del subject_data['Millitm']
+        del subject_data['Status']
+        del subject_data['Marker']
         csv_file = output_folder + '\\' + csv_file + '_new.xlsx'
         #--- Convert Dataframe to Excel ---#
         writer = ExcelWriter(csv_file)
@@ -84,10 +82,14 @@ def save_excel(subject_data, csv_file, manip, output_folder):
         subject_data.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.save()
     if manip == False:
+        # does not delete time or millitm columns.
+        # NOT GOOD FOR MATLAB
+        del subject_data['Status']
+        del subject_data['Marker']
         csv_file = output_folder + '\\' + csv_file + '_new_raw.xlsx'
         #--- Convert Dataframe to Excel ---#
         writer = ExcelWriter(csv_file)
         # , header=False) #save without name of columns and the row-numbers
         subject_data.to_excel(writer, sheet_name='Sheet1', index=False)
-        writer.save()
+        writer.save()    
     

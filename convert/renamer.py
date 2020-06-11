@@ -1,6 +1,8 @@
+# DESCRIPTION
 # This script was made to rename bunch of bike files, each of them named "Data_Log.csv", and copy them to a new folder.
 
-# Goal: get them ready for bike script and eventual MatLab analysis
+# GOAL
+# Get files ready for start_biking script (to reorganize) and eventual MatLab analysis (for entropy analysis)
 
 
 import glob # for getting list of files

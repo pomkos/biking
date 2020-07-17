@@ -18,6 +18,10 @@ Combine different excel files, reformat it, and clean data appropriately for eve
 
 # How to
 
+## Open in JupyterLab
+
+http://jupyter.domain.name/hub/user-redirect/git-pull?repo=https://github.com/pomkos/biking&branch=master&subPath=convert/biking2.0.ipynb&app=lab
+
 ## Start the script:
 
 Install all requirements

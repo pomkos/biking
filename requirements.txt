@@ -1,6 +1,5 @@
-NumPy
-pandas
-openpyxl
-xlrd
-pysimplegui
-nolds
+matlab==0.1
+nolds==0.5.2
+numpy==1.20.1
+pandas==1.2.3
+PySimpleGUI==4.35.0
